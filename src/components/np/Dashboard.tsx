@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { BarChart3, Briefcase, FileSpreadsheet, Package, TrendingUp, Wallet, CalendarPlus, Upload, Receipt, MapPin } from "lucide-react";
+import { BarChart3, Briefcase, FileSpreadsheet, Truck, TrendingUp, Wallet, CalendarPlus, Upload, Receipt, MapPin, Users, ClipboardList } from "lucide-react";
 import { StatCard } from "./StatCard";
 import { QuickAccessCard } from "./QuickAccessCard";
 import { RevenueChart } from "./RevenueChart";
@@ -20,11 +20,13 @@ import { company } from "@/config/company";
 
 const quickAccess = [
   { icon: TrendingUp, titleKey: "salesExcel", descKey: "salesExcelDesc", href: excelLinks.sales },
-  { icon: Package, titleKey: "inventoryExcel", descKey: "inventoryExcelDesc", href: excelLinks.inventory },
-  { icon: Briefcase, titleKey: "employeesExcel", descKey: "employeesExcelDesc", href: excelLinks.employees },
+  { icon: Users, titleKey: "customersExcel", descKey: "customersExcelDesc", href: excelLinks.customers },
+  { icon: Truck, titleKey: "suppliersExcel", descKey: "suppliersExcelDesc", href: excelLinks.suppliers },
+  { icon: ClipboardList, titleKey: "operationsExcel", descKey: "operationsExcelDesc", href: excelLinks.operations },
   { icon: Wallet, titleKey: "financeExcel", descKey: "financeExcelDesc", href: excelLinks.finance },
   { icon: BarChart3, titleKey: "reportsExcel", descKey: "reportsExcelDesc", href: excelLinks.reports },
 ] as const;
+
 
 const quickActions = [
   { icon: CalendarPlus, key: "newBooking" },
