@@ -133,12 +133,49 @@
 }
 
 @layer base {
+  :root {
+    color-scheme: dark;
+  }
+
   * {
     border-color: var(--color-border);
   }
 
+  html,
   body {
-    background-color: var(--color-background);
-    color: var(--color-foreground);
+    background-color: #050f22;
+    color: white;
+    font-family: "Inter", system-ui, -apple-system, sans-serif;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  .font-serif,
+  h1.font-serif,
+  h2.font-serif,
+  .font-serif * {
+    font-family: "Cormorant Garamond", "Times New Roman", serif;
+    letter-spacing: 0.005em;
+  }
+
+  ::selection {
+    background: rgba(212, 175, 55, 0.35);
+    color: white;
+  }
+
+  /* Custom thin gold scrollbars */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(212, 175, 55, 0.25);
+    border-radius: 999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(212, 175, 55, 0.5);
   }
 }
+
