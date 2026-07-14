@@ -8,6 +8,18 @@ import { SplashScreen } from "./SplashScreen";
 import { CommandPalette } from "./CommandPalette";
 import { FloatingActionButton } from "./FloatingActionButton";
 import { Dashboard, GenericSection } from "./Dashboard";
+import {
+  CustomersSection,
+  SuppliersSection,
+  OperationsSection,
+  BookingsSection,
+  FinanceSection,
+  SalesSection,
+  HRSection,
+  ReportsSection,
+  FilesSection,
+  SettingsSection,
+} from "./Sections";
 import { company } from "@/config/company";
 import { useI18n } from "@/hooks/useI18n";
 import { sidebarItems } from "@/config/navigation";
@@ -64,6 +76,26 @@ export function Workspace() {
               >
                 {active === "dashboard" ? (
                   <Dashboard />
+                ) : active === "customers" ? (
+                  <CustomersSection />
+                ) : active === "suppliers" ? (
+                  <SuppliersSection />
+                ) : active === "operations" ? (
+                  <OperationsSection />
+                ) : active === "bookings" ? (
+                  <BookingsSection />
+                ) : active === "finance" ? (
+                  <FinanceSection />
+                ) : active === "sales" ? (
+                  <SalesSection />
+                ) : active === "hr" ? (
+                  <HRSection />
+                ) : active === "reports" ? (
+                  <ReportsSection />
+                ) : active === "files" ? (
+                  <FilesSection />
+                ) : active === "settings" ? (
+                  <SettingsSection />
                 ) : (
                   <GenericSection title={sectionLabel} />
                 )}
