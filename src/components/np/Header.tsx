@@ -138,18 +138,30 @@ export function Header({ onOpenSidebar, onOpenCommand, currentSection }: Props) 
                 </div>
                 <ul className="py-1 text-sm">
                   {[
-                    { icon: User, label: t("profile") },
-                    { icon: Settings, label: "Settings" },
-                    { icon: LogOut, label: t("signOut") },
+                    { icon: User, label: t("profile"), action: () => setUserOpen(false) },
+                    { icon: Settings, label: "Settings", action: () => setUserOpen(false) },
+                    {
+                      icon: LogOut,
+                      label: t("signOut"),
+                      action: async () => {
+                        const { supabase } = await import("@/integrations/supabase/client");
+                        await supabase.auth.signOut();
+                        window.location.href = "/auth";
+                      },
+                    },
                   ].map((it) => (
                     <li key={it.label}>
-                      <button className="flex w-full items-center gap-2.5 px-4 py-2 text-white/70 hover:bg-white/[0.05] hover:text-white">
+                      <button
+                        onClick={it.action}
+                        className="flex w-full items-center gap-2.5 px-4 py-2 text-white/70 hover:bg-white/[0.05] hover:text-white"
+                      >
                         <it.icon size={14} />
                         {it.label}
                       </button>
                     </li>
                   ))}
                 </ul>
+
               </motion.div>
             )}
           </AnimatePresence>
