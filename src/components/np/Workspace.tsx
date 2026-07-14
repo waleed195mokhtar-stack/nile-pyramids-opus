@@ -76,6 +76,26 @@ export function Workspace() {
               >
                 {active === "dashboard" ? (
                   <Dashboard />
+                ) : active === "customers" ? (
+                  <CustomersSection />
+                ) : active === "suppliers" ? (
+                  <SuppliersSection />
+                ) : active === "operations" ? (
+                  <OperationsSection />
+                ) : active === "bookings" ? (
+                  <BookingsSection />
+                ) : active === "finance" ? (
+                  <FinanceSection />
+                ) : active === "sales" ? (
+                  <SalesSection />
+                ) : active === "hr" ? (
+                  <HRSection />
+                ) : active === "reports" ? (
+                  <ReportsSection />
+                ) : active === "files" ? (
+                  <FilesSection />
+                ) : active === "settings" ? (
+                  <SettingsSection />
                 ) : (
                   <GenericSection title={sectionLabel} />
                 )}
