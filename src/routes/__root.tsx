@@ -89,10 +89,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:title", content: "Nile Pyramids Workspace" },
       {
         property: "og:description",
-        content: "Premium internal workspace for Nile Pyramids travel company.",
+        content: "Premium internal workspace for Nile Pyramids travel company — sales, bookings, finance, HR and reports.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Nile Pyramids Workspace" },
+      { name: "twitter:description", content: "Premium internal workspace for Nile Pyramids travel company — sales, bookings, finance, HR and reports." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/8b0ee3dc-e260-4c6f-9b1b-28f271705a0a/id-preview-37d4e5f2--6ed2483c-d51d-47f9-8dcb-c0fc904e5acc.lovable.app-1784021389213.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/8b0ee3dc-e260-4c6f-9b1b-28f271705a0a/id-preview-37d4e5f2--6ed2483c-d51d-47f9-8dcb-c0fc904e5acc.lovable.app-1784021389213.png" },
     ],
     links: [
       {
