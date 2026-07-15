@@ -3,6 +3,7 @@ import { X } from "lucide-react";
 import { sidebarItems } from "@/config/navigation";
 import { company } from "@/config/company";
 import { useI18n } from "@/hooks/useI18n";
+import { useProfile } from "@/hooks/useProfile";
 import { cn } from "@/lib/utils";
 
 type Props = {
