@@ -66,7 +66,7 @@ export function Sidebar({ active, onSelect, mobileOpen, onClose }: Props) {
               {t("welcome")}
             </div>
             <div className="mt-1 truncate font-medium text-white">
-              {lang === "ar" ? company.currentUser.nameAr : company.currentUser.name}
+              {welcomeName}
             </div>
           </div>
         </div>
