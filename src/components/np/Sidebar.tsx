@@ -15,6 +15,11 @@ type Props = {
 
 export function Sidebar({ active, onSelect, mobileOpen, onClose }: Props) {
   const { lang, t } = useI18n();
+  const { profile } = useProfile();
+  const welcomeName =
+    (profile?.full_name && profile.full_name.trim()) ||
+    profile?.email ||
+    (lang === "ar" ? company.currentUser.nameAr : company.currentUser.name);
 
   return (
     <>
