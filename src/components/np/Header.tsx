@@ -1,9 +1,11 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { Bell, Command, Menu, Moon, Search, Sun, LogOut, User, Settings, Globe } from "lucide-react";
+import { Bell, Command, Menu, Moon, Search, Sun, LogOut, User, Settings, Globe, ShieldCheck } from "lucide-react";
 import { useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { company } from "@/config/company";
 import { useI18n } from "@/hooks/useI18n";
 import { useThemeMode } from "@/hooks/useThemeMode";
+import { useProfile } from "@/hooks/useProfile";
 import { notifications } from "@/data/mockData";
 
 type Props = {
@@ -15,8 +17,16 @@ type Props = {
 export function Header({ onOpenSidebar, onOpenCommand, currentSection }: Props) {
   const { lang, toggleLang, t } = useI18n();
   const { mode, toggle: toggleTheme } = useThemeMode();
+  const { profile, isAdmin } = useProfile();
   const [notifOpen, setNotifOpen] = useState(false);
   const [userOpen, setUserOpen] = useState(false);
+
+  const displayName =
+    (profile?.full_name && profile.full_name.trim()) ||
+    profile?.email ||
+    (lang === "ar" ? company.currentUser.nameAr : company.currentUser.name);
+  const displayEmail = profile?.email ?? company.currentUser.email;
+  const initial = (displayName || "?").slice(0, 1).toUpperCase();
 
   return (
     <header className="sticky top-0 z-30 border-b border-white/10 bg-[#050F22]/70 backdrop-blur-2xl">
