@@ -1,9 +1,11 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { Bell, Command, Menu, Moon, Search, Sun, LogOut, User, Settings, Globe } from "lucide-react";
+import { Bell, Command, Menu, Moon, Search, Sun, LogOut, User, Settings, Globe, ShieldCheck } from "lucide-react";
 import { useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { company } from "@/config/company";
 import { useI18n } from "@/hooks/useI18n";
 import { useThemeMode } from "@/hooks/useThemeMode";
+import { useProfile } from "@/hooks/useProfile";
 import { notifications } from "@/data/mockData";
 
 type Props = {
@@ -15,8 +17,16 @@ type Props = {
 export function Header({ onOpenSidebar, onOpenCommand, currentSection }: Props) {
   const { lang, toggleLang, t } = useI18n();
   const { mode, toggle: toggleTheme } = useThemeMode();
+  const { profile, isAdmin } = useProfile();
   const [notifOpen, setNotifOpen] = useState(false);
   const [userOpen, setUserOpen] = useState(false);
+
+  const displayName =
+    (profile?.full_name && profile.full_name.trim()) ||
+    profile?.email ||
+    (lang === "ar" ? company.currentUser.nameAr : company.currentUser.name);
+  const displayEmail = profile?.email ?? company.currentUser.email;
+  const initial = (displayName || "?").slice(0, 1).toUpperCase();
 
   return (
     <header className="sticky top-0 z-30 border-b border-white/10 bg-[#050F22]/70 backdrop-blur-2xl">
@@ -112,12 +122,21 @@ export function Header({ onOpenSidebar, onOpenCommand, currentSection }: Props) 
             onClick={() => setUserOpen((v) => !v)}
             className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.03] p-1 pe-3 hover:border-[#D4AF37]/40"
           >
-            <div className="flex h-7 w-7 items-center justify-center rounded-md bg-gradient-to-br from-[#D4AF37] to-[#B8912A] text-xs font-bold text-[#081C3A]">
-              {(lang === "ar" ? company.currentUser.nameAr : company.currentUser.name).slice(0, 1)}
-            </div>
-            <span className="hidden md:inline text-xs font-medium text-white/80">
-              {lang === "ar" ? company.currentUser.nameAr : company.currentUser.name}
+            {profile?.avatar_url ? (
+              <img src={profile.avatar_url} alt="" className="h-7 w-7 rounded-md object-cover" />
+            ) : (
+              <div className="flex h-7 w-7 items-center justify-center rounded-md bg-gradient-to-br from-[#D4AF37] to-[#B8912A] text-xs font-bold text-[#081C3A]">
+                {initial}
+              </div>
+            )}
+            <span className="hidden md:inline text-xs font-medium text-white/80 max-w-[140px] truncate">
+              {displayName}
             </span>
+            {isAdmin && (
+              <span className="hidden md:inline rounded bg-[#D4AF37]/20 px-1.5 py-0.5 text-[9px] font-bold text-[#D4AF37]">
+                ADMIN
+              </span>
+            )}
           </button>
           <AnimatePresence>
             {userOpen && (
@@ -126,42 +145,62 @@ export function Header({ onOpenSidebar, onOpenCommand, currentSection }: Props) 
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: -8, scale: 0.98 }}
                 transition={{ duration: 0.15 }}
-                className="absolute end-0 mt-2 w-56 overflow-hidden rounded-2xl border border-white/10 bg-[#0A1B3A]/95 backdrop-blur-2xl shadow-2xl"
+                className="absolute end-0 mt-2 w-64 overflow-hidden rounded-2xl border border-white/10 bg-[#0A1B3A]/95 backdrop-blur-2xl shadow-2xl"
               >
                 <div className="border-b border-white/10 px-4 py-3">
-                  <div className="text-sm font-semibold text-white">
-                    {lang === "ar" ? company.currentUser.nameAr : company.currentUser.name}
-                  </div>
-                  <div className="mt-0.5 text-xs text-white/50">
-                    {lang === "ar" ? company.currentUser.roleAr : company.currentUser.role}
-                  </div>
+                  <div className="text-sm font-semibold text-white truncate">{displayName}</div>
+                  <div className="mt-0.5 text-xs text-white/50 truncate">{displayEmail}</div>
+                  {isAdmin && (
+                    <div className="mt-1.5 inline-flex items-center gap-1 rounded bg-[#D4AF37]/15 px-1.5 py-0.5 text-[10px] font-semibold text-[#D4AF37]">
+                      <ShieldCheck size={10} /> Administrator
+                    </div>
+                  )}
                 </div>
                 <ul className="py-1 text-sm">
-                  {[
-                    { icon: User, label: t("profile"), action: () => setUserOpen(false) },
-                    { icon: Settings, label: "Settings", action: () => setUserOpen(false) },
-                    {
-                      icon: LogOut,
-                      label: t("signOut"),
-                      action: async () => {
+                  {isAdmin && (
+                    <li>
+                      <Link
+                        to="/admin"
+                        onClick={() => setUserOpen(false)}
+                        className="flex w-full items-center gap-2.5 px-4 py-2 text-[#D4AF37] hover:bg-white/[0.05]"
+                      >
+                        <ShieldCheck size={14} />
+                        إدارة المستخدمين
+                      </Link>
+                    </li>
+                  )}
+                  <li>
+                    <button
+                      onClick={() => setUserOpen(false)}
+                      className="flex w-full items-center gap-2.5 px-4 py-2 text-white/70 hover:bg-white/[0.05] hover:text-white"
+                    >
+                      <User size={14} />
+                      {t("profile")}
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      onClick={() => setUserOpen(false)}
+                      className="flex w-full items-center gap-2.5 px-4 py-2 text-white/70 hover:bg-white/[0.05] hover:text-white"
+                    >
+                      <Settings size={14} />
+                      Settings
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      onClick={async () => {
                         const { supabase } = await import("@/integrations/supabase/client");
                         await supabase.auth.signOut();
                         window.location.href = "/auth";
-                      },
-                    },
-                  ].map((it) => (
-                    <li key={it.label}>
-                      <button
-                        onClick={it.action}
-                        className="flex w-full items-center gap-2.5 px-4 py-2 text-white/70 hover:bg-white/[0.05] hover:text-white"
-                      >
-                        <it.icon size={14} />
-                        {it.label}
-                      </button>
-                    </li>
-                  ))}
+                      }}
+                      className="flex w-full items-center gap-2.5 px-4 py-2 text-white/70 hover:bg-white/[0.05] hover:text-white"
+                    >
+                      <LogOut size={14} />
+                      {t("signOut")}
+                    </button>
+                  </li>
                 </ul>
-
               </motion.div>
             )}
           </AnimatePresence>

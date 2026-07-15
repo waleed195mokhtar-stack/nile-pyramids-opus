@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.tg_profiles_updated_at() FROM PUBLIC, anon, authenticated;

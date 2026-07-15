@@ -3,6 +3,7 @@ import { X } from "lucide-react";
 import { sidebarItems } from "@/config/navigation";
 import { company } from "@/config/company";
 import { useI18n } from "@/hooks/useI18n";
+import { useProfile } from "@/hooks/useProfile";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -14,6 +15,11 @@ type Props = {
 
 export function Sidebar({ active, onSelect, mobileOpen, onClose }: Props) {
   const { lang, t } = useI18n();
+  const { profile } = useProfile();
+  const welcomeName =
+    (profile?.full_name && profile.full_name.trim()) ||
+    profile?.email ||
+    (lang === "ar" ? company.currentUser.nameAr : company.currentUser.name);
 
   return (
     <>
@@ -60,7 +66,7 @@ export function Sidebar({ active, onSelect, mobileOpen, onClose }: Props) {
               {t("welcome")}
             </div>
             <div className="mt-1 truncate font-medium text-white">
-              {lang === "ar" ? company.currentUser.nameAr : company.currentUser.name}
+              {welcomeName}
             </div>
           </div>
         </div>
