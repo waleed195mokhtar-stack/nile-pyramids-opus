@@ -170,13 +170,14 @@ export function Header({ onOpenSidebar, onOpenCommand, currentSection }: Props) 
                     </li>
                   )}
                   <li>
-                    <button
+                    <Link
+                      to="/profile"
                       onClick={() => setUserOpen(false)}
                       className="flex w-full items-center gap-2.5 px-4 py-2 text-white/70 hover:bg-white/[0.05] hover:text-white"
                     >
                       <User size={14} />
                       {t("profile")}
-                    </button>
+                    </Link>
                   </li>
                   <li>
                     <button
