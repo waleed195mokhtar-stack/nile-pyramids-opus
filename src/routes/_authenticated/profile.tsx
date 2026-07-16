@@ -92,6 +92,7 @@ function ProfilePage() {
       } else {
         toast.success(isAr ? "تم حفظ التغييرات" : "Changes saved");
       }
+      window.dispatchEvent(new Event("profile:refresh"));
       router.invalidate();
     } catch (err) {
       toast.error((err as Error).message);
