@@ -1,7 +1,7 @@
-import { createFileRoute, Link,useRouter } from "@tanstack/react-router";
+import { createFileRoute, Link , useRouter } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import {ArrowLeft,Camera, Loader2, Mail, Save, User as UserIcon } from "lucide-react";
+import {ArrowLeft , Camera, Loader2, Mail, Save, User as UserIcon } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { GlassCard } from "@/components/np/GlassCard";
@@ -111,7 +111,7 @@ function ProfilePage() {
 
   const initial = (fullName || email || "?").slice(0, 1).toUpperCase();
 
-  return (
+
 return (
   <div dir={isAr ? "rtl" : "ltr"} className="mx-auto max-w-3xl px-4 py-8 md:px-6 md:py-12">
     <motion.div
