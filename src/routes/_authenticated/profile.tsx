@@ -1,7 +1,7 @@
-import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { createFileRoute, Link,useRouter } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { Camera, Loader2, Mail, Save, User as UserIcon } from "lucide-react";
+import {ArrowLeft,Camera, Loader2, Mail, Save, User as UserIcon } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { GlassCard } from "@/components/np/GlassCard";
@@ -112,15 +112,25 @@ function ProfilePage() {
   const initial = (fullName || email || "?").slice(0, 1).toUpperCase();
 
   return (
-    <div dir={isAr ? "rtl" : "ltr"} className="mx-auto max-w-3xl px-4 py-8 md:px-6 md:py-12">
-      <motion.div
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
+return (
+  <div dir={isAr ? "rtl" : "ltr"} className="mx-auto max-w-3xl px-4 py-8 md:px-6 md:py-12">
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+    >
+      <Link
+        to="/"
+        className="mb-4 inline-flex items-center gap-2 text-sm text-white/60 transition hover:text-[#D4AF37]"
       >
-        <h1 className="font-serif text-3xl text-white md:text-4xl">
-          {isAr ? "الملف الشخصي" : "Your Profile"}
-        </h1>
+        <ArrowLeft size={16} />
+        {isAr ? "العودة للرئيسية" : "Back to Home"}
+      </Link>
+
+      <h1 className="font-serif text-3xl text-white md:text-4xl">
+        {isAr ? "الملف الشخصي" : "Your Profile"}
+      </h1>
+      
         <p className="mt-1 text-sm text-white/50">
           {isAr ? "قم بتحديث بياناتك وصورتك الشخصية" : "Update your details and profile picture"}
         </p>
