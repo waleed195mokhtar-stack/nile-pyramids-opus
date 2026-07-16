@@ -12,6 +12,8 @@ import { Toaster } from "sonner";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { I18nProvider } from "@/hooks/useI18n";
+import { ThemeModeProvider } from "@/hooks/useThemeMode";
 
 
 function NotFoundComponent() {
