@@ -12,6 +12,8 @@ import { Toaster } from "sonner";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { I18nProvider } from "@/hooks/useI18n";
+import { ThemeModeProvider } from "@/hooks/useThemeMode";
 
 
 function NotFoundComponent() {
@@ -150,9 +152,13 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Toaster theme="dark" position="top-center" />
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
+      <ThemeModeProvider>
+        <I18nProvider>
+          <Toaster theme="dark" position="top-center" />
+          {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+          <Outlet />
+        </I18nProvider>
+      </ThemeModeProvider>
     </QueryClientProvider>
   );
 
