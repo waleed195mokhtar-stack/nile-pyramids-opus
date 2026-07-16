@@ -42,9 +42,12 @@ export function useProfile() {
     }
     load();
     const { data } = supabase.auth.onAuthStateChange(() => load());
+    const onRefresh = () => load();
+    window.addEventListener("profile:refresh", onRefresh);
     return () => {
       mounted = false;
       data.subscription.unsubscribe();
+      window.removeEventListener("profile:refresh", onRefresh);
     };
   }, []);
 
