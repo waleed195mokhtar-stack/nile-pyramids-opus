@@ -63,7 +63,6 @@ export function CrudSection({
   const close = () => { setOpen(false); setEditing(null); };
 
   const save = async (values: Record<string, unknown>) => {
-    // strip empty strings on optional fields → null
     const payload: Record<string, unknown> = {};
     for (const f of fields) {
       const v = values[f.key];
@@ -73,11 +72,11 @@ export function CrudSection({
     }
     if (editing && editing.id) {
       const { error } = await supabase.from(table as never).update(payload as never).eq("id", editing.id);
-      if (error) return toast.error(error.message);
+      if (error) { toast.error(error.message); return; }
       toast.success(ar ? "تم التحديث" : "Updated");
     } else {
       const { error } = await supabase.from(table as never).insert(payload as never);
-      if (error) return toast.error(error.message);
+      if (error) { toast.error(error.message); return; }
       toast.success(ar ? "تمت الإضافة" : "Created");
     }
     close();
@@ -87,10 +86,11 @@ export function CrudSection({
   const remove = async (r: Row) => {
     if (!confirm(ar ? "حذف هذا العنصر؟" : "Delete this item?")) return;
     const { error } = await supabase.from(table as never).delete().eq("id", r.id);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success(ar ? "تم الحذف" : "Deleted");
     load();
   };
+
 
   const filtered = rows.filter((r) => {
     if (!query) return true;
