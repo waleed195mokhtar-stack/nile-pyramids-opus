@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { useProfile } from "@/hooks/useProfile";
 import { BarChart3, Briefcase, FileSpreadsheet, Truck, TrendingUp, Wallet, CalendarPlus, Upload, Receipt, MapPin, Users, ClipboardList } from "lucide-react";
 import { StatCard } from "./StatCard";
 import { QuickAccessCard } from "./QuickAccessCard";
@@ -36,8 +37,12 @@ const quickActions = [
 ] as const;
 
 export function Dashboard() {
-  const { lang, t } = useI18n();
-  const userName = lang === "ar" ? company.currentUser.nameAr : company.currentUser.name;
+   const { lang, t } = useI18n();
+  const { profile } = useProfile();
+  const userName =
+    (profile?.full_name && profile.full_name.trim()) ||
+    profile?.email ||
+    (lang === "ar" ? company.currentUser.nameAr : company.currentUser.name);
 
   return (
     <div className="mx-auto max-w-[1400px] px-4 py-6 md:px-8 md:py-10">
