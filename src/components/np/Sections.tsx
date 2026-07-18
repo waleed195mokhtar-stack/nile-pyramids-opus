@@ -12,6 +12,8 @@ import {
   employeesFull,
   files,
 } from "@/data/businessData";
+import { CrudSection } from "./CrudSection";
+
 
 const fmt = (n: number) => "$" + n.toLocaleString();
 
