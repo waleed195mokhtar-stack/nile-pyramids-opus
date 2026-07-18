@@ -129,13 +129,13 @@ export function CustomersSection() {
         { key: "email", label: "Email", labelAr: "البريد", type: "email" },
         { key: "phone", label: "Phone", labelAr: "الهاتف" },
         { key: "tier", label: "Tier", labelAr: "الفئة", type: "select", options: ["VIP", "Gold", "Silver", "New"], required: true,
-          render: (v) => <Badge color={v === "VIP" || v === "Gold" ? "gold" : v === "New" ? "blue" : "gray"}>{String(v)}</Badge> },
+          render: (v: unknown) => <Badge color={v === "VIP" || v === "Gold" ? "gold" : v === "New" ? "blue" : "gray"}>{String(v)}</Badge> },
         { key: "bookings", label: "Bookings", labelAr: "الحجوزات", type: "number" },
         { key: "total_spend", label: "Total Spend", labelAr: "الإنفاق", type: "number",
-          render: (v) => <span className="font-semibold text-[#E8C866]">{fmt(Number(v) || 0)}</span> },
+          render: (v: unknown) => <span className="font-semibold text-[#E8C866]">{fmt(Number(v) || 0)}</span> },
         { key: "last_trip", label: "Last Trip", labelAr: "آخر رحلة", type: "date" },
         { key: "status", label: "Status", labelAr: "الحالة", type: "select", options: ["active", "inactive"], required: true,
-          render: (v) => <Badge color={v === "active" ? "green" : "gray"}>{String(v)}</Badge> },
+          render: (v: unknown) => <Badge color={v === "active" ? "green" : "gray"}>{String(v)}</Badge> },
       ]}
     />
   );
@@ -162,11 +162,11 @@ export function SuppliersSection() {
         { key: "contact", label: "Contact", labelAr: "جهة الاتصال" },
         { key: "phone", label: "Phone", labelAr: "الهاتف" },
         { key: "rating", label: "Rating", labelAr: "التقييم", type: "number",
-          render: (v) => <span className="text-[#E8C866]">{Number(v) || 0} ★</span> },
+          render: (v: unknown) => <span className="text-[#E8C866]">{Number(v) || 0} ★</span> },
         { key: "outstanding", label: "Outstanding", labelAr: "المستحقات", type: "number",
-          render: (v) => <span className="font-semibold">{fmt(Number(v) || 0)}</span> },
+          render: (v: unknown) => <span className="font-semibold">{fmt(Number(v) || 0)}</span> },
         { key: "status", label: "Status", labelAr: "الحالة", type: "select", options: ["active", "review", "paused"], required: true,
-          render: (v) => <Badge color={v === "active" ? "green" : v === "review" ? "gold" : "gray"}>{String(v)}</Badge> },
+          render: (v: unknown) => <Badge color={v === "active" ? "green" : v === "review" ? "gold" : "gray"}>{String(v)}</Badge> },
       ]}
     />
   );
@@ -195,7 +195,7 @@ export function OperationsSection() {
         { key: "start_date", label: "Start", labelAr: "البداية", type: "date" },
         { key: "end_date", label: "End", labelAr: "النهاية", type: "date" },
         { key: "status", label: "Status", labelAr: "الحالة", type: "select", options: ["scheduled", "in-progress", "completed", "delayed"], required: true,
-          render: (v) => <Badge color={v === "in-progress" ? "gold" : v === "scheduled" ? "blue" : v === "completed" ? "green" : "red"}>{String(v)}</Badge> },
+          render: (v: unknown) => <Badge color={v === "in-progress" ? "gold" : v === "scheduled" ? "blue" : v === "completed" ? "green" : "red"}>{String(v)}</Badge> },
       ]}
     />
   );
