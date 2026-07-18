@@ -106,114 +106,99 @@ function Table({ head, children }: { head: string[]; children: React.ReactNode }
   );
 }
 
-/* ---------- Customers ---------- */
+/* ---------- Customers (Supabase-backed) ---------- */
 export function CustomersSection() {
   const { lang } = useI18n();
   const ar = lang === "ar";
-  const tierColor = { VIP: "gold", Gold: "gold", Silver: "gray", New: "blue" } as const;
-
   return (
-    <PageShell title={ar ? "العملاء" : "Customers"} subtitle={ar ? "دليل العملاء والاتصالات وسجل الحجوزات" : "Client directory, contacts and booking history"}>
-      <KpiRow items={[
-        { label: ar ? "إجمالي العملاء" : "Total Customers", value: "342", icon: UsersIcon, delta: "+18 this month" },
-        { label: "VIP", value: "24", icon: Star, delta: "+2" },
-        { label: ar ? "الإيرادات YTD" : "Revenue YTD", value: "$1.24M", icon: DollarSign, delta: "+22.4%" },
-        { label: ar ? "متوسط الحجز" : "Avg. Booking", value: "$4,180", icon: TrendingUp, delta: "+6%" },
-      ]} />
-      <Toolbar placeholder={ar ? "ابحث عن عميل…" : "Search customers…"} />
-      <Table head={ar ? ["الكود", "العميل", "الدولة", "الفئة", "الحجوزات", "الإنفاق", "آخر رحلة", "الحالة"] : ["ID", "Customer", "Country", "Tier", "Bookings", "Spend", "Last Trip", "Status"]}>
-        {customers.map((c, i) => (
-          <motion.tr key={c.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.03 }} className="hover:bg-white/[0.03]">
-            <td className="px-4 py-3 text-white/50 font-mono text-xs">{c.id}</td>
-            <td className="px-4 py-3">
-              <div className="font-medium text-white">{ar ? c.nameAr : c.name}</div>
-              <div className="flex items-center gap-3 text-[11px] text-white/40">
-                <span className="inline-flex items-center gap-1"><Mail size={10} />{c.email}</span>
-                <span className="inline-flex items-center gap-1"><Phone size={10} />{c.phone}</span>
-              </div>
-            </td>
-            <td className="px-4 py-3 text-white/70">{ar ? c.countryAr : c.country}</td>
-            <td className="px-4 py-3"><Badge color={tierColor[c.tier]}>{c.tier}</Badge></td>
-            <td className="px-4 py-3 text-white/70">{c.bookings}</td>
-            <td className="px-4 py-3 font-semibold text-[#E8C866]">{fmt(c.totalSpend)}</td>
-            <td className="px-4 py-3 text-white/60">{c.lastTrip}</td>
-            <td className="px-4 py-3">
-              <Badge color={c.status === "active" ? "green" : "gray"}>{c.status}</Badge>
-            </td>
-          </motion.tr>
-        ))}
-      </Table>
-    </PageShell>
+    <CrudSection
+      table="customers"
+      ar={ar}
+      titleEn="Customers"
+      titleAr="العملاء"
+      subtitleEn="Client directory, contacts and booking history"
+      subtitleAr="دليل العملاء والاتصالات وسجل الحجوزات"
+      searchKeys={["name", "name_ar", "country", "email", "phone"]}
+      fields={[
+        { key: "name", label: "Name", labelAr: "الاسم", required: true },
+        { key: "name_ar", label: "Name (Arabic)", labelAr: "الاسم بالعربي" },
+        { key: "country", label: "Country", labelAr: "الدولة" },
+        { key: "country_ar", label: "Country (Arabic)", labelAr: "الدولة بالعربي" },
+        { key: "email", label: "Email", labelAr: "البريد", type: "email" },
+        { key: "phone", label: "Phone", labelAr: "الهاتف" },
+        { key: "tier", label: "Tier", labelAr: "الفئة", type: "select", options: ["VIP", "Gold", "Silver", "New"], required: true,
+          render: (v) => <Badge color={v === "VIP" || v === "Gold" ? "gold" : v === "New" ? "blue" : "gray"}>{String(v)}</Badge> },
+        { key: "bookings", label: "Bookings", labelAr: "الحجوزات", type: "number" },
+        { key: "total_spend", label: "Total Spend", labelAr: "الإنفاق", type: "number",
+          render: (v) => <span className="font-semibold text-[#E8C866]">{fmt(Number(v) || 0)}</span> },
+        { key: "last_trip", label: "Last Trip", labelAr: "آخر رحلة", type: "date" },
+        { key: "status", label: "Status", labelAr: "الحالة", type: "select", options: ["active", "inactive"], required: true,
+          render: (v) => <Badge color={v === "active" ? "green" : "gray"}>{String(v)}</Badge> },
+      ]}
+    />
   );
 }
 
-/* ---------- Suppliers ---------- */
+/* ---------- Suppliers (Supabase-backed) ---------- */
 export function SuppliersSection() {
   const { lang } = useI18n();
   const ar = lang === "ar";
   return (
-    <PageShell title={ar ? "الموردين" : "Suppliers"} subtitle={ar ? "الموردون والعقود والمستحقات" : "Vendors, contracts and payables"}>
-      <KpiRow items={[
-        { label: ar ? "الموردون النشطون" : "Active Suppliers", value: "68", icon: UsersIcon },
-        { label: ar ? "المستحقات" : "Outstanding", value: "$115,900", icon: DollarSign, delta: "-8% MoM" },
-        { label: ar ? "متوسط التقييم" : "Avg Rating", value: "4.6 ★", icon: Star },
-        { label: ar ? "عقود تنتهي" : "Contracts Ending", value: "4", icon: Calendar },
-      ]} />
-      <Toolbar placeholder={ar ? "ابحث عن مورد…" : "Search suppliers…"} />
-      <Table head={ar ? ["الكود", "المورد", "الفئة", "جهة الاتصال", "التقييم", "المستحقات", "الحالة"] : ["ID", "Supplier", "Category", "Contact", "Rating", "Outstanding", "Status"]}>
-        {suppliers.map((s, i) => (
-          <motion.tr key={s.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.03 }} className="hover:bg-white/[0.03]">
-            <td className="px-4 py-3 text-white/50 font-mono text-xs">{s.id}</td>
-            <td className="px-4 py-3 font-medium text-white">{ar ? s.nameAr : s.name}</td>
-            <td className="px-4 py-3 text-white/70">{ar ? s.categoryAr : s.category}</td>
-            <td className="px-4 py-3">
-              <div className="text-white/80">{s.contact}</div>
-              <div className="text-[11px] text-white/40">{s.phone}</div>
-            </td>
-            <td className="px-4 py-3 text-[#E8C866]">{s.rating} ★</td>
-            <td className="px-4 py-3 font-semibold text-white">{fmt(s.outstanding)}</td>
-            <td className="px-4 py-3">
-              <Badge color={s.status === "active" ? "green" : s.status === "review" ? "gold" : "gray"}>{s.status}</Badge>
-            </td>
-          </motion.tr>
-        ))}
-      </Table>
-    </PageShell>
+    <CrudSection
+      table="suppliers"
+      ar={ar}
+      titleEn="Suppliers"
+      titleAr="الموردين"
+      subtitleEn="Vendors, contracts and payables"
+      subtitleAr="الموردون والعقود والمستحقات"
+      searchKeys={["name", "name_ar", "category", "contact", "phone"]}
+      fields={[
+        { key: "name", label: "Name", labelAr: "الاسم", required: true },
+        { key: "name_ar", label: "Name (Arabic)", labelAr: "الاسم بالعربي" },
+        { key: "category", label: "Category", labelAr: "الفئة" },
+        { key: "category_ar", label: "Category (Arabic)", labelAr: "الفئة بالعربي" },
+        { key: "contact", label: "Contact", labelAr: "جهة الاتصال" },
+        { key: "phone", label: "Phone", labelAr: "الهاتف" },
+        { key: "rating", label: "Rating", labelAr: "التقييم", type: "number",
+          render: (v) => <span className="text-[#E8C866]">{Number(v) || 0} ★</span> },
+        { key: "outstanding", label: "Outstanding", labelAr: "المستحقات", type: "number",
+          render: (v) => <span className="font-semibold">{fmt(Number(v) || 0)}</span> },
+        { key: "status", label: "Status", labelAr: "الحالة", type: "select", options: ["active", "review", "paused"], required: true,
+          render: (v) => <Badge color={v === "active" ? "green" : v === "review" ? "gold" : "gray"}>{String(v)}</Badge> },
+      ]}
+    />
   );
 }
 
-/* ---------- Operations ---------- */
+/* ---------- Operations (Supabase-backed) ---------- */
 export function OperationsSection() {
   const { lang } = useI18n();
   const ar = lang === "ar";
-  const statusColor = { "in-progress": "gold", scheduled: "blue", completed: "green", delayed: "red" } as const;
-
   return (
-    <PageShell title={ar ? "التشغيل" : "Operations"} subtitle={ar ? "الجولات والرحلات والتنفيذ اليومي" : "Tours, logistics and daily execution"}>
-      <KpiRow items={[
-        { label: ar ? "جاري تنفيذها" : "In Progress", value: "8", icon: ClipboardList },
-        { label: ar ? "مجدولة اليوم" : "Scheduled Today", value: "14", icon: Calendar },
-        { label: ar ? "متأخرة" : "Delayed", value: "1", icon: TrendingUp },
-        { label: ar ? "إجمالي الركاب" : "Total Pax", value: "312", icon: UsersIcon, delta: "+42" },
-      ]} />
-      <Toolbar placeholder={ar ? "ابحث عن جولة…" : "Search operations…"} />
-      <Table head={ar ? ["الكود", "الجولة", "الوجهة", "المرشد", "الركاب", "البداية", "النهاية", "الحالة"] : ["ID", "Tour", "Destination", "Guide", "Pax", "Start", "End", "Status"]}>
-        {operations.map((o, i) => (
-          <motion.tr key={o.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.03 }} className="hover:bg-white/[0.03]">
-            <td className="px-4 py-3 text-white/50 font-mono text-xs">{o.id}</td>
-            <td className="px-4 py-3 font-medium text-white">{ar ? o.titleAr : o.titleEn}</td>
-            <td className="px-4 py-3 text-white/70">{ar ? o.destinationAr : o.destinationEn}</td>
-            <td className="px-4 py-3 text-white/70">{o.guide}</td>
-            <td className="px-4 py-3 text-white/70">{o.pax}</td>
-            <td className="px-4 py-3 text-white/60">{o.start}</td>
-            <td className="px-4 py-3 text-white/60">{o.end}</td>
-            <td className="px-4 py-3"><Badge color={statusColor[o.status]}>{o.status}</Badge></td>
-          </motion.tr>
-        ))}
-      </Table>
-    </PageShell>
+    <CrudSection
+      table="operations"
+      ar={ar}
+      titleEn="Operations"
+      titleAr="التشغيل"
+      subtitleEn="Tours, logistics and daily execution"
+      subtitleAr="الجولات والرحلات والتنفيذ اليومي"
+      searchKeys={["title_en", "title_ar", "destination_en", "guide"]}
+      fields={[
+        { key: "title_en", label: "Tour", labelAr: "الجولة", required: true },
+        { key: "title_ar", label: "Tour (Arabic)", labelAr: "الجولة بالعربي" },
+        { key: "destination_en", label: "Destination", labelAr: "الوجهة" },
+        { key: "destination_ar", label: "Destination (Arabic)", labelAr: "الوجهة بالعربي" },
+        { key: "guide", label: "Guide", labelAr: "المرشد" },
+        { key: "pax", label: "Pax", labelAr: "الركاب", type: "number" },
+        { key: "start_date", label: "Start", labelAr: "البداية", type: "date" },
+        { key: "end_date", label: "End", labelAr: "النهاية", type: "date" },
+        { key: "status", label: "Status", labelAr: "الحالة", type: "select", options: ["scheduled", "in-progress", "completed", "delayed"], required: true,
+          render: (v) => <Badge color={v === "in-progress" ? "gold" : v === "scheduled" ? "blue" : v === "completed" ? "green" : "red"}>{String(v)}</Badge> },
+      ]}
+    />
   );
 }
+
 
 /* ---------- Bookings ---------- */
 export function BookingsSection() {
