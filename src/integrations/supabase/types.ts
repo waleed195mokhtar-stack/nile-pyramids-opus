@@ -14,6 +14,108 @@ export type Database = {
   }
   public: {
     Tables: {
+      customers: {
+        Row: {
+          bookings: number
+          country: string | null
+          country_ar: string | null
+          created_at: string
+          created_by: string | null
+          email: string | null
+          id: string
+          last_trip: string | null
+          name: string
+          name_ar: string | null
+          phone: string | null
+          status: string
+          tier: string
+          total_spend: number
+          updated_at: string
+        }
+        Insert: {
+          bookings?: number
+          country?: string | null
+          country_ar?: string | null
+          created_at?: string
+          created_by?: string | null
+          email?: string | null
+          id?: string
+          last_trip?: string | null
+          name: string
+          name_ar?: string | null
+          phone?: string | null
+          status?: string
+          tier?: string
+          total_spend?: number
+          updated_at?: string
+        }
+        Update: {
+          bookings?: number
+          country?: string | null
+          country_ar?: string | null
+          created_at?: string
+          created_by?: string | null
+          email?: string | null
+          id?: string
+          last_trip?: string | null
+          name?: string
+          name_ar?: string | null
+          phone?: string | null
+          status?: string
+          tier?: string
+          total_spend?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      operations: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          destination_ar: string | null
+          destination_en: string | null
+          end_date: string | null
+          guide: string | null
+          id: string
+          pax: number
+          start_date: string | null
+          status: string
+          title_ar: string | null
+          title_en: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          destination_ar?: string | null
+          destination_en?: string | null
+          end_date?: string | null
+          guide?: string | null
+          id?: string
+          pax?: number
+          start_date?: string | null
+          status?: string
+          title_ar?: string | null
+          title_en: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          destination_ar?: string | null
+          destination_en?: string | null
+          end_date?: string | null
+          guide?: string | null
+          id?: string
+          pax?: number
+          start_date?: string | null
+          status?: string
+          title_ar?: string | null
+          title_en?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -39,6 +141,54 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      suppliers: {
+        Row: {
+          category: string | null
+          category_ar: string | null
+          contact: string | null
+          created_at: string
+          created_by: string | null
+          id: string
+          name: string
+          name_ar: string | null
+          outstanding: number
+          phone: string | null
+          rating: number
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string | null
+          category_ar?: string | null
+          contact?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          name: string
+          name_ar?: string | null
+          outstanding?: number
+          phone?: string | null
+          rating?: number
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string | null
+          category_ar?: string | null
+          contact?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          name?: string
+          name_ar?: string | null
+          outstanding?: number
+          phone?: string | null
+          rating?: number
           status?: string
           updated_at?: string
         }
@@ -77,6 +227,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_approved: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
       app_role: "admin" | "member"
