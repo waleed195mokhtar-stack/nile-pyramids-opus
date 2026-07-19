@@ -120,7 +120,12 @@ export function CrudSection({
   };
 
 
+  const activeFilters = filterKeys ?? [];
   const filtered = rows.filter((r) => {
+    for (const k of activeFilters) {
+      const v = filters[k];
+      if (v && String(r[k] ?? "") !== v) return false;
+    }
     if (!query) return true;
     const q = query.toLowerCase();
     return searchKeys.some((k) => String(r[k] ?? "").toLowerCase().includes(q));
