@@ -5,7 +5,7 @@ import { GlassCard } from "./GlassCard";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
-export type FieldType = "text" | "number" | "date" | "email" | "select";
+export type FieldType = "text" | "number" | "date" | "email" | "select" | "textarea" | "reference";
 
 export type FieldDef = {
   key: string;
@@ -13,6 +13,10 @@ export type FieldDef = {
   labelAr?: string;
   type?: FieldType;
   options?: string[];
+  /** For type: "reference" — load {id,label} pairs from another table */
+  refTable?: string;
+  refLabelKey?: string;
+  refLabelKeyAr?: string;
   required?: boolean;
   hideInTable?: boolean;
   render?: (value: unknown, row: Record<string, unknown>) => React.ReactNode;
@@ -47,6 +51,7 @@ export function CrudSection({
   const [query, setQuery] = useState("");
   const [editing, setEditing] = useState<Row | null>(null);
   const [open, setOpen] = useState(false);
+  const [refs, setRefs] = useState<Record<string, { id: string; label: string; labelAr: string }[]>>({});
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -57,6 +62,26 @@ export function CrudSection({
   }, [table, orderBy]);
 
   useEffect(() => { load(); }, [load]);
+
+  useEffect(() => {
+    const refFields = fields.filter((f) => f.type === "reference" && f.refTable);
+    if (refFields.length === 0) return;
+    (async () => {
+      const next: Record<string, { id: string; label: string; labelAr: string }[]> = {};
+      for (const f of refFields) {
+        const { data } = await supabase.from(f.refTable as never).select("*");
+        const rows = (data ?? []) as Record<string, unknown>[];
+        next[f.key] = rows.map((r) => ({
+          id: String(r.id),
+          label: String(r[f.refLabelKey ?? "name"] ?? ""),
+          labelAr: String(r[f.refLabelKeyAr ?? f.refLabelKey ?? "name"] ?? r[f.refLabelKey ?? "name"] ?? ""),
+        }));
+      }
+      setRefs(next);
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fields.map((f) => f.refTable).join("|")]);
+
 
   const openNew = () => { setEditing({ id: "" } as Row); setOpen(true); };
   const openEdit = (r: Row) => { setEditing(r); setOpen(true); };
@@ -148,11 +173,17 @@ export function CrudSection({
                 </td></tr>
               ) : filtered.map((r, i) => (
                 <motion.tr key={r.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.02 }} className="hover:bg-white/[0.03]">
-                  {tableFields.map((f) => (
-                    <td key={f.key} className="px-4 py-3 text-white/80">
-                      {f.render ? f.render(r[f.key], r) : (r[f.key] === null || r[f.key] === undefined || r[f.key] === "" ? <span className="text-white/30">—</span> : String(r[f.key]))}
-                    </td>
-                  ))}
+                  {tableFields.map((f) => {
+                    const raw = r[f.key];
+                    let content: React.ReactNode;
+                    if (f.render) content = f.render(raw, r);
+                    else if (raw === null || raw === undefined || raw === "") content = <span className="text-white/30">—</span>;
+                    else if (f.type === "reference") {
+                      const opt = refs[f.key]?.find((o) => o.id === String(raw));
+                      content = opt ? (ar ? opt.labelAr : opt.label) : <span className="text-white/30">—</span>;
+                    } else content = String(raw);
+                    return <td key={f.key} className="px-4 py-3 text-white/80">{content}</td>;
+                  })}
                   <td className="px-4 py-3 text-right">
                     <div className="inline-flex gap-1">
                       <button onClick={() => openEdit(r)} className="rounded-lg border border-white/10 bg-white/[0.03] p-1.5 text-white/70 hover:bg-white/10" title={ar ? "تعديل" : "Edit"}>
@@ -175,6 +206,7 @@ export function CrudSection({
           <EditorDialog
             ar={ar}
             fields={fields}
+            refs={refs}
             initial={editing}
             onClose={close}
             onSave={save}
@@ -187,9 +219,10 @@ export function CrudSection({
   );
 }
 
-function EditorDialog({ ar, fields, initial, onClose, onSave, titleEn, titleAr }: {
+function EditorDialog({ ar, fields, refs, initial, onClose, onSave, titleEn, titleAr }: {
   ar: boolean;
   fields: FieldDef[];
+  refs: Record<string, { id: string; label: string; labelAr: string }[]>;
   initial: Row;
   onClose: () => void;
   onSave: (values: Record<string, unknown>) => Promise<void>;
@@ -234,31 +267,38 @@ function EditorDialog({ ar, fields, initial, onClose, onSave, titleEn, titleAr }
           <button onClick={onClose} className="rounded-lg p-1.5 text-white/60 hover:bg-white/10"><X size={18} /></button>
         </div>
         <form onSubmit={submit} className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          {fields.map((f) => (
-            <div key={f.key} className={f.type === "select" || f.width === "full" ? "md:col-span-2" : ""}>
-              <label className="mb-1 block text-[11px] uppercase tracking-widest text-white/50">
-                {ar && f.labelAr ? f.labelAr : f.label}{f.required && <span className="text-[#D4AF37]"> *</span>}
-              </label>
-              {f.type === "select" ? (
-                <select
-                  value={String(values[f.key] ?? "")}
-                  onChange={(e) => setValues((v) => ({ ...v, [f.key]: e.target.value }))}
-                  className="w-full rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-white outline-none focus:border-[#D4AF37]/50"
-                >
-                  <option value="" className="bg-[#0B1F3F]">—</option>
-                  {f.options?.map((o) => <option key={o} value={o} className="bg-[#0B1F3F]">{o}</option>)}
-                </select>
-              ) : (
-                <input
-                  type={f.type === "number" ? "number" : f.type === "date" ? "date" : f.type === "email" ? "email" : "text"}
-                  step={f.type === "number" ? "any" : undefined}
-                  value={String(values[f.key] ?? "")}
-                  onChange={(e) => setValues((v) => ({ ...v, [f.key]: e.target.value }))}
-                  className="w-full rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-white outline-none focus:border-[#D4AF37]/50"
-                />
-              )}
-            </div>
-          ))}
+          {fields.map((f) => {
+            const wide = f.type === "select" || f.type === "reference" || f.type === "textarea" || f.width === "full";
+            const inputClass = "w-full rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-white outline-none focus:border-[#D4AF37]/50";
+            return (
+              <div key={f.key} className={wide ? "md:col-span-2" : ""}>
+                <label className="mb-1 block text-[11px] uppercase tracking-widest text-white/50">
+                  {ar && f.labelAr ? f.labelAr : f.label}{f.required && <span className="text-[#D4AF37]"> *</span>}
+                </label>
+                {f.type === "select" ? (
+                  <select value={String(values[f.key] ?? "")} onChange={(e) => setValues((v) => ({ ...v, [f.key]: e.target.value }))} className={inputClass}>
+                    <option value="" className="bg-[#0B1F3F]">—</option>
+                    {f.options?.map((o) => <option key={o} value={o} className="bg-[#0B1F3F]">{o}</option>)}
+                  </select>
+                ) : f.type === "reference" ? (
+                  <select value={String(values[f.key] ?? "")} onChange={(e) => setValues((v) => ({ ...v, [f.key]: e.target.value }))} className={inputClass}>
+                    <option value="" className="bg-[#0B1F3F]">—</option>
+                    {refs[f.key]?.map((o) => <option key={o.id} value={o.id} className="bg-[#0B1F3F]">{ar ? o.labelAr : o.label}</option>)}
+                  </select>
+                ) : f.type === "textarea" ? (
+                  <textarea rows={4} value={String(values[f.key] ?? "")} onChange={(e) => setValues((v) => ({ ...v, [f.key]: e.target.value }))} className={inputClass + " resize-y min-h-[96px]"} />
+                ) : (
+                  <input
+                    type={f.type === "number" ? "number" : f.type === "date" ? "date" : f.type === "email" ? "email" : "text"}
+                    step={f.type === "number" ? "any" : undefined}
+                    value={String(values[f.key] ?? "")}
+                    onChange={(e) => setValues((v) => ({ ...v, [f.key]: e.target.value }))}
+                    className={inputClass}
+                  />
+                )}
+              </div>
+            );
+          })}
           <div className="md:col-span-2 mt-2 flex justify-end gap-2">
             <button type="button" onClick={onClose} className="rounded-lg border border-white/10 bg-white/[0.03] px-4 py-2 text-sm text-white/80 hover:bg-white/[0.06]">
               {ar ? "إلغاء" : "Cancel"}

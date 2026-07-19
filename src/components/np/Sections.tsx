@@ -182,20 +182,26 @@ export function OperationsSection() {
       ar={ar}
       titleEn="Operations"
       titleAr="التشغيل"
-      subtitleEn="Tours, logistics and daily execution"
-      subtitleAr="الجولات والرحلات والتنفيذ اليومي"
-      searchKeys={["title_en", "title_ar", "destination_en", "guide"]}
+      subtitleEn="Tours linking customers, suppliers, pricing and execution notes"
+      subtitleAr="الجولات التي تربط العملاء والموردين والتسعير وملاحظات التنفيذ"
+      searchKeys={["title_en", "title_ar", "destination_en", "guide", "description"]}
       fields={[
         { key: "title_en", label: "Tour", labelAr: "الجولة", required: true },
         { key: "title_ar", label: "Tour (Arabic)", labelAr: "الجولة بالعربي" },
+        { key: "customer_id", label: "Customer", labelAr: "العميل", type: "reference", refTable: "customers", refLabelKey: "name", refLabelKeyAr: "name_ar", required: true },
+        { key: "supplier_id", label: "Supplier", labelAr: "المورد", type: "reference", refTable: "suppliers", refLabelKey: "name", refLabelKeyAr: "name_ar", required: true },
         { key: "destination_en", label: "Destination", labelAr: "الوجهة" },
-        { key: "destination_ar", label: "Destination (Arabic)", labelAr: "الوجهة بالعربي" },
+        { key: "destination_ar", label: "Destination (Arabic)", labelAr: "الوجهة بالعربي", hideInTable: true },
         { key: "guide", label: "Guide", labelAr: "المرشد" },
         { key: "pax", label: "Pax", labelAr: "الركاب", type: "number" },
+        { key: "price", label: "Price", labelAr: "السعر", type: "number", required: true,
+          render: (v: unknown) => <span className="font-semibold text-[#E8C866]">{fmt(Number(v) || 0)}</span> },
         { key: "start_date", label: "Start", labelAr: "البداية", type: "date" },
         { key: "end_date", label: "End", labelAr: "النهاية", type: "date" },
         { key: "status", label: "Status", labelAr: "الحالة", type: "select", options: ["scheduled", "in-progress", "completed", "delayed"], required: true,
           render: (v: unknown) => <Badge color={v === "in-progress" ? "gold" : v === "scheduled" ? "blue" : v === "completed" ? "green" : "red"}>{String(v)}</Badge> },
+        { key: "description", label: "Description / Notes", labelAr: "الوصف / ملاحظات", type: "textarea",
+          render: (v: unknown) => v ? <span className="line-clamp-2 max-w-[280px] text-white/60">{String(v)}</span> : <span className="text-white/30">—</span> },
       ]}
     />
   );
