@@ -173,11 +173,17 @@ export function CrudSection({
                 </td></tr>
               ) : filtered.map((r, i) => (
                 <motion.tr key={r.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.02 }} className="hover:bg-white/[0.03]">
-                  {tableFields.map((f) => (
-                    <td key={f.key} className="px-4 py-3 text-white/80">
-                      {f.render ? f.render(r[f.key], r) : (r[f.key] === null || r[f.key] === undefined || r[f.key] === "" ? <span className="text-white/30">—</span> : String(r[f.key]))}
-                    </td>
-                  ))}
+                  {tableFields.map((f) => {
+                    const raw = r[f.key];
+                    let content: React.ReactNode;
+                    if (f.render) content = f.render(raw, r);
+                    else if (raw === null || raw === undefined || raw === "") content = <span className="text-white/30">—</span>;
+                    else if (f.type === "reference") {
+                      const opt = refs[f.key]?.find((o) => o.id === String(raw));
+                      content = opt ? (ar ? opt.labelAr : opt.label) : <span className="text-white/30">—</span>;
+                    } else content = String(raw);
+                    return <td key={f.key} className="px-4 py-3 text-white/80">{content}</td>;
+                  })}
                   <td className="px-4 py-3 text-right">
                     <div className="inline-flex gap-1">
                       <button onClick={() => openEdit(r)} className="rounded-lg border border-white/10 bg-white/[0.03] p-1.5 text-white/70 hover:bg-white/10" title={ar ? "تعديل" : "Edit"}>
