@@ -35,6 +35,7 @@ export function CrudSection({
   orderBy = "created_at",
   ar,
   searchKeys,
+  filterKeys,
 }: {
   table: string;
   titleEn: string;
@@ -45,10 +46,12 @@ export function CrudSection({
   orderBy?: string;
   ar: boolean;
   searchKeys: string[];
+  filterKeys?: string[];
 }) {
   const [rows, setRows] = useState<Row[]>([]);
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
+  const [filters, setFilters] = useState<Record<string, string>>({});
   const [editing, setEditing] = useState<Row | null>(null);
   const [open, setOpen] = useState(false);
   const [refs, setRefs] = useState<Record<string, { id: string; label: string; labelAr: string }[]>>({});
