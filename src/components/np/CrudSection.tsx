@@ -5,7 +5,7 @@ import { GlassCard } from "./GlassCard";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
-export type FieldType = "text" | "number" | "date" | "email" | "select";
+export type FieldType = "text" | "number" | "date" | "email" | "select" | "textarea" | "reference";
 
 export type FieldDef = {
   key: string;
@@ -13,6 +13,10 @@ export type FieldDef = {
   labelAr?: string;
   type?: FieldType;
   options?: string[];
+  /** For type: "reference" — load {id,label} pairs from another table */
+  refTable?: string;
+  refLabelKey?: string;
+  refLabelKeyAr?: string;
   required?: boolean;
   hideInTable?: boolean;
   render?: (value: unknown, row: Record<string, unknown>) => React.ReactNode;
