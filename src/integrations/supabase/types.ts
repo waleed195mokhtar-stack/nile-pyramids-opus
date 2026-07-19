@@ -72,14 +72,18 @@ export type Database = {
         Row: {
           created_at: string
           created_by: string | null
+          customer_id: string | null
+          description: string | null
           destination_ar: string | null
           destination_en: string | null
           end_date: string | null
           guide: string | null
           id: string
           pax: number
+          price: number
           start_date: string | null
           status: string
+          supplier_id: string | null
           title_ar: string | null
           title_en: string
           updated_at: string
@@ -87,14 +91,18 @@ export type Database = {
         Insert: {
           created_at?: string
           created_by?: string | null
+          customer_id?: string | null
+          description?: string | null
           destination_ar?: string | null
           destination_en?: string | null
           end_date?: string | null
           guide?: string | null
           id?: string
           pax?: number
+          price?: number
           start_date?: string | null
           status?: string
+          supplier_id?: string | null
           title_ar?: string | null
           title_en: string
           updated_at?: string
@@ -102,19 +110,38 @@ export type Database = {
         Update: {
           created_at?: string
           created_by?: string | null
+          customer_id?: string | null
+          description?: string | null
           destination_ar?: string | null
           destination_en?: string | null
           end_date?: string | null
           guide?: string | null
           id?: string
           pax?: number
+          price?: number
           start_date?: string | null
           status?: string
+          supplier_id?: string | null
           title_ar?: string | null
           title_en?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "operations_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "operations_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
