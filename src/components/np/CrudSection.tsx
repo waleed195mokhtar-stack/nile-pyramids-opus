@@ -51,6 +51,7 @@ export function CrudSection({
   const [query, setQuery] = useState("");
   const [editing, setEditing] = useState<Row | null>(null);
   const [open, setOpen] = useState(false);
+  const [refs, setRefs] = useState<Record<string, { id: string; label: string; labelAr: string }[]>>({});
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -61,6 +62,26 @@ export function CrudSection({
   }, [table, orderBy]);
 
   useEffect(() => { load(); }, [load]);
+
+  useEffect(() => {
+    const refFields = fields.filter((f) => f.type === "reference" && f.refTable);
+    if (refFields.length === 0) return;
+    (async () => {
+      const next: Record<string, { id: string; label: string; labelAr: string }[]> = {};
+      for (const f of refFields) {
+        const { data } = await supabase.from(f.refTable as never).select("*");
+        const rows = (data ?? []) as Record<string, unknown>[];
+        next[f.key] = rows.map((r) => ({
+          id: String(r.id),
+          label: String(r[f.refLabelKey ?? "name"] ?? ""),
+          labelAr: String(r[f.refLabelKeyAr ?? f.refLabelKey ?? "name"] ?? r[f.refLabelKey ?? "name"] ?? ""),
+        }));
+      }
+      setRefs(next);
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fields.map((f) => f.refTable).join("|")]);
+
 
   const openNew = () => { setEditing({ id: "" } as Row); setOpen(true); };
   const openEdit = (r: Row) => { setEditing(r); setOpen(true); };
