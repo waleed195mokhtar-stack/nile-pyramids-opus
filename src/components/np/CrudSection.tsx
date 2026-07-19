@@ -35,6 +35,7 @@ export function CrudSection({
   orderBy = "created_at",
   ar,
   searchKeys,
+  filterKeys,
 }: {
   table: string;
   titleEn: string;
@@ -45,10 +46,12 @@ export function CrudSection({
   orderBy?: string;
   ar: boolean;
   searchKeys: string[];
+  filterKeys?: string[];
 }) {
   const [rows, setRows] = useState<Row[]>([]);
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
+  const [filters, setFilters] = useState<Record<string, string>>({});
   const [editing, setEditing] = useState<Row | null>(null);
   const [open, setOpen] = useState(false);
   const [refs, setRefs] = useState<Record<string, { id: string; label: string; labelAr: string }[]>>({});
@@ -117,7 +120,12 @@ export function CrudSection({
   };
 
 
+  const activeFilters = filterKeys ?? [];
   const filtered = rows.filter((r) => {
+    for (const k of activeFilters) {
+      const v = filters[k];
+      if (v && String(r[k] ?? "") !== v) return false;
+    }
     if (!query) return true;
     const q = query.toLowerCase();
     return searchKeys.some((k) => String(r[k] ?? "").toLowerCase().includes(q));
@@ -146,6 +154,27 @@ export function CrudSection({
             className="w-full bg-transparent text-sm text-white placeholder:text-white/30 outline-none"
           />
         </div>
+        {activeFilters.map((k) => {
+          const f = fields.find((x) => x.key === k);
+          if (!f) return null;
+          const opts = f.type === "reference" ? (refs[k] ?? []).map((o) => ({ value: o.id, label: ar ? o.labelAr : o.label })) : (f.options ?? []).map((o) => ({ value: o, label: o }));
+          return (
+            <select
+              key={k}
+              value={filters[k] ?? ""}
+              onChange={(e) => setFilters((prev) => ({ ...prev, [k]: e.target.value }))}
+              className="rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-white outline-none backdrop-blur-xl focus:border-[#D4AF37]/50"
+            >
+              <option value="" className="bg-[#0B1F3F]">{ar ? "الكل — " : "All — "}{ar && f.labelAr ? f.labelAr : f.label}</option>
+              {opts.map((o) => <option key={o.value} value={o.value} className="bg-[#0B1F3F]">{o.label}</option>)}
+            </select>
+          );
+        })}
+        {(query || Object.values(filters).some(Boolean)) && (
+          <button onClick={() => { setQuery(""); setFilters({}); }} className="rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-white/70 hover:bg-white/10">
+            {ar ? "مسح" : "Clear"}
+          </button>
+        )}
         <button onClick={openNew} className="flex items-center gap-1.5 rounded-xl bg-[#D4AF37] px-3 py-2 text-xs font-semibold text-[#081C3A] hover:bg-[#E8C866]">
           <Plus size={13} /> {ar ? "إضافة" : "New"}
         </button>

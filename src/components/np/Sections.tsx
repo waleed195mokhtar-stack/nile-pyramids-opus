@@ -185,6 +185,7 @@ export function OperationsSection() {
       subtitleEn="Tours linking customers, suppliers, pricing and execution notes"
       subtitleAr="الجولات التي تربط العملاء والموردين والتسعير وملاحظات التنفيذ"
       searchKeys={["title_en", "title_ar", "destination_en", "guide", "description"]}
+      filterKeys={["customer_id", "supplier_id", "status"]}
       fields={[
         { key: "title_en", label: "Tour", labelAr: "الجولة", required: true },
         { key: "title_ar", label: "Tour (Arabic)", labelAr: "الجولة بالعربي" },
