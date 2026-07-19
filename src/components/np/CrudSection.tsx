@@ -206,6 +206,7 @@ export function CrudSection({
           <EditorDialog
             ar={ar}
             fields={fields}
+            refs={refs}
             initial={editing}
             onClose={close}
             onSave={save}
@@ -218,9 +219,10 @@ export function CrudSection({
   );
 }
 
-function EditorDialog({ ar, fields, initial, onClose, onSave, titleEn, titleAr }: {
+function EditorDialog({ ar, fields, refs, initial, onClose, onSave, titleEn, titleAr }: {
   ar: boolean;
   fields: FieldDef[];
+  refs: Record<string, { id: string; label: string; labelAr: string }[]>;
   initial: Row;
   onClose: () => void;
   onSave: (values: Record<string, unknown>) => Promise<void>;
