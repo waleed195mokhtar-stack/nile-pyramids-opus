@@ -267,31 +267,38 @@ function EditorDialog({ ar, fields, refs, initial, onClose, onSave, titleEn, tit
           <button onClick={onClose} className="rounded-lg p-1.5 text-white/60 hover:bg-white/10"><X size={18} /></button>
         </div>
         <form onSubmit={submit} className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          {fields.map((f) => (
-            <div key={f.key} className={f.type === "select" || f.width === "full" ? "md:col-span-2" : ""}>
-              <label className="mb-1 block text-[11px] uppercase tracking-widest text-white/50">
-                {ar && f.labelAr ? f.labelAr : f.label}{f.required && <span className="text-[#D4AF37]"> *</span>}
-              </label>
-              {f.type === "select" ? (
-                <select
-                  value={String(values[f.key] ?? "")}
-                  onChange={(e) => setValues((v) => ({ ...v, [f.key]: e.target.value }))}
-                  className="w-full rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-white outline-none focus:border-[#D4AF37]/50"
-                >
-                  <option value="" className="bg-[#0B1F3F]">—</option>
-                  {f.options?.map((o) => <option key={o} value={o} className="bg-[#0B1F3F]">{o}</option>)}
-                </select>
-              ) : (
-                <input
-                  type={f.type === "number" ? "number" : f.type === "date" ? "date" : f.type === "email" ? "email" : "text"}
-                  step={f.type === "number" ? "any" : undefined}
-                  value={String(values[f.key] ?? "")}
-                  onChange={(e) => setValues((v) => ({ ...v, [f.key]: e.target.value }))}
-                  className="w-full rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-white outline-none focus:border-[#D4AF37]/50"
-                />
-              )}
-            </div>
-          ))}
+          {fields.map((f) => {
+            const wide = f.type === "select" || f.type === "reference" || f.type === "textarea" || f.width === "full";
+            const inputClass = "w-full rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-white outline-none focus:border-[#D4AF37]/50";
+            return (
+              <div key={f.key} className={wide ? "md:col-span-2" : ""}>
+                <label className="mb-1 block text-[11px] uppercase tracking-widest text-white/50">
+                  {ar && f.labelAr ? f.labelAr : f.label}{f.required && <span className="text-[#D4AF37]"> *</span>}
+                </label>
+                {f.type === "select" ? (
+                  <select value={String(values[f.key] ?? "")} onChange={(e) => setValues((v) => ({ ...v, [f.key]: e.target.value }))} className={inputClass}>
+                    <option value="" className="bg-[#0B1F3F]">—</option>
+                    {f.options?.map((o) => <option key={o} value={o} className="bg-[#0B1F3F]">{o}</option>)}
+                  </select>
+                ) : f.type === "reference" ? (
+                  <select value={String(values[f.key] ?? "")} onChange={(e) => setValues((v) => ({ ...v, [f.key]: e.target.value }))} className={inputClass}>
+                    <option value="" className="bg-[#0B1F3F]">—</option>
+                    {refs[f.key]?.map((o) => <option key={o.id} value={o.id} className="bg-[#0B1F3F]">{ar ? o.labelAr : o.label}</option>)}
+                  </select>
+                ) : f.type === "textarea" ? (
+                  <textarea rows={4} value={String(values[f.key] ?? "")} onChange={(e) => setValues((v) => ({ ...v, [f.key]: e.target.value }))} className={inputClass + " resize-y min-h-[96px]"} />
+                ) : (
+                  <input
+                    type={f.type === "number" ? "number" : f.type === "date" ? "date" : f.type === "email" ? "email" : "text"}
+                    step={f.type === "number" ? "any" : undefined}
+                    value={String(values[f.key] ?? "")}
+                    onChange={(e) => setValues((v) => ({ ...v, [f.key]: e.target.value }))}
+                    className={inputClass}
+                  />
+                )}
+              </div>
+            );
+          })}
           <div className="md:col-span-2 mt-2 flex justify-end gap-2">
             <button type="button" onClick={onClose} className="rounded-lg border border-white/10 bg-white/[0.03] px-4 py-2 text-sm text-white/80 hover:bg-white/[0.06]">
               {ar ? "إلغاء" : "Cancel"}
