@@ -74,8 +74,11 @@ export function Workspace() {
                 exit={{ opacity: 0, y: -12 }}
                 transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
               >
-                {active === "dashboard" ? (
+                {!accessLoading && active !== "dashboard" && !canView(active) ? (
+                  <NoAccess label={sectionLabel} />
+                ) : active === "dashboard" ? (
                   <Dashboard />
+
                 ) : active === "customers" ? (
                   <CustomersSection />
                 ) : active === "suppliers" ? (
