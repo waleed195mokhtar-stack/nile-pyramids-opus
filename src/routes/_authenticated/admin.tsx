@@ -136,6 +136,30 @@ function AdminPage() {
           </div>
         </div>
 
+        {/* Tabs */}
+        <div className="mb-6 flex flex-wrap items-center gap-1.5 rounded-xl border border-white/10 bg-white/5 p-1">
+          {([
+            ["users", "المستخدمون"],
+            ["sheets", "الشيتات"],
+            ["permissions", "الصلاحيات"],
+          ] as const).map(([k, label]) => (
+            <button
+              key={k}
+              onClick={() => setTab(k)}
+              className={`rounded-lg px-4 py-2 text-sm font-medium transition ${
+                tab === k ? "bg-[#D4AF37] text-[#081C3A]" : "text-white/60 hover:text-white"
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+
+        {tab === "sheets" && <SheetsManager />}
+        {tab === "permissions" && <PermissionsMatrix />}
+
+        {tab === "users" && (
+        <>
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
           <StatPill label="الإجمالي" value={counts.all} tone="neutral" />
@@ -143,6 +167,7 @@ function AdminPage() {
           <StatPill label="مفعّل" value={counts.approved} tone="green" icon={<UserCheck size={14} />} />
           <StatPill label="مرفوض" value={counts.rejected} tone="red" icon={<UserX size={14} />} />
         </div>
+
 
         {/* Toolbar */}
         <div className="mb-4 flex flex-col md:flex-row md:items-center gap-3">
