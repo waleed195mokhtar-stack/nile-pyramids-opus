@@ -3,6 +3,7 @@ import { useProfile } from "@/hooks/useProfile";
 import { BarChart3, Briefcase, FileSpreadsheet, Truck, TrendingUp, Wallet, CalendarPlus, Upload, Receipt, MapPin, Users, ClipboardList } from "lucide-react";
 import { StatCard } from "./StatCard";
 import { QuickAccessCard } from "./QuickAccessCard";
+import { SheetCard } from "./SheetCard";
 import { RevenueChart } from "./RevenueChart";
 import {
   AnnouncementsWidget,
@@ -16,6 +17,8 @@ import {
 import { GlassCard } from "./GlassCard";
 import { stats } from "@/data/mockData";
 import { excelLinks } from "@/config/links";
+import { useSheets } from "@/hooks/useSheets";
+import { useAccess } from "@/hooks/useAccess";
 import { useI18n } from "@/hooks/useI18n";
 import { company } from "@/config/company";
 
@@ -39,6 +42,11 @@ const quickActions = [
 export function Dashboard() {
    const { lang, t } = useI18n();
   const { profile } = useProfile();
+  const { sheets } = useSheets();
+  const { roles, isAdmin } = useAccess();
+  const visibleSheets = sheets.filter(
+    (s) => isAdmin || s.allowed_roles.some((r) => roles.includes(r as never)),
+  );
   const userName =
     (profile?.full_name && profile.full_name.trim()) ||
     profile?.email ||
@@ -149,16 +157,18 @@ export function Dashboard() {
       <section className="mt-10">
         <SectionTitle title={t("quickAccess")} subtitle={t("quickAccessDesc")} />
         <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-          {quickAccess.map((c, i) => (
-            <QuickAccessCard
-              key={c.titleKey}
-              icon={c.icon}
-              titleKey={c.titleKey as any}
-              descKey={c.descKey as any}
-              href={c.href}
-              index={i}
-            />
-          ))}
+          {visibleSheets.length > 0
+            ? visibleSheets.map((s, i) => <SheetCard key={s.id} sheet={s} index={i} />)
+            : quickAccess.map((c, i) => (
+                <QuickAccessCard
+                  key={c.titleKey}
+                  icon={c.icon}
+                  titleKey={c.titleKey as any}
+                  descKey={c.descKey as any}
+                  href={c.href}
+                  index={i}
+                />
+              ))}
         </div>
       </section>
 
