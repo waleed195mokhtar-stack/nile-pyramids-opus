@@ -93,6 +93,18 @@ function AdminPage() {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  const roleMut = useMutation({
+    mutationFn: (v: { userId: string; role: string }) => doSetRole({ data: v }),
+    onSuccess: () => {
+      toast.success("تم تحديث الدور");
+      invalidate();
+      window.dispatchEvent(new Event("permissions:refresh"));
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+
+
   const filtered = users.filter((u) => {
     if (filter !== "all" && u.status !== filter) return false;
     if (query) {
