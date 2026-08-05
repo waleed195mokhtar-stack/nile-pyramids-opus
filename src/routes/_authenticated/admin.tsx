@@ -148,9 +148,9 @@ function AdminPage() {
                   className="text-2xl tracking-wide text-white"
                   style={{ fontFamily: "Cormorant Garamond, serif", fontWeight: 600 }}
                 >
-                  Admin — إدارة المستخدمين
+                  Admin — لوحة التحكم
                 </h1>
-                <p className="text-xs text-white/50">قبول، رفض، أو حذف حسابات الورك سبيس</p>
+                <p className="text-xs text-white/50">المستخدمون، الشيتات، والصلاحيات</p>
               </div>
             </div>
           </div>
