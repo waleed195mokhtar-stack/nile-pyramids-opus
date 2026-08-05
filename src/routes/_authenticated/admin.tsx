@@ -21,7 +21,12 @@ import {
   approveUser,
   rejectUser,
   deleteUser,
+  setUserRole,
 } from "@/lib/admin.functions";
+import { SheetsManager } from "@/components/np/SheetsManager";
+import { PermissionsMatrix } from "@/components/np/PermissionsMatrix";
+import { ROLE_OPTIONS, ROLE_LABELS } from "@/hooks/useAccess";
+
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({ meta: [{ title: "Admin — Nile Pyramids" }] }),
