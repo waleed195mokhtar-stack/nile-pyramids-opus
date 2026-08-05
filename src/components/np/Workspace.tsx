@@ -22,10 +22,14 @@ import {
 } from "./Sections";
 import { company } from "@/config/company";
 import { useI18n } from "@/hooks/useI18n";
+import { useAccess } from "@/hooks/useAccess";
+import { GlassCard } from "./GlassCard";
+import { Lock } from "lucide-react";
 import { sidebarItems } from "@/config/navigation";
 
 export function Workspace() {
   const { lang } = useI18n();
+  const { canView, loading: accessLoading } = useAccess();
   const [active, setActive] = useState("dashboard");
   const [mobileOpen, setMobileOpen] = useState(false);
   const [cmdOpen, setCmdOpen] = useState(false);
@@ -74,8 +78,11 @@ export function Workspace() {
                 exit={{ opacity: 0, y: -12 }}
                 transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
               >
-                {active === "dashboard" ? (
+                {!accessLoading && active !== "dashboard" && !canView(active) ? (
+                  <NoAccess label={sectionLabel} />
+                ) : active === "dashboard" ? (
                   <Dashboard />
+
                 ) : active === "customers" ? (
                   <CustomersSection />
                 ) : active === "suppliers" ? (
@@ -114,6 +121,20 @@ export function Workspace() {
 
       <FloatingActionButton />
       <CommandPalette open={cmdOpen} onClose={() => setCmdOpen(false)} onNavigate={setActive} />
+    </div>
+  );
+}
+
+function NoAccess({ label }: { label: string }) {
+  return (
+    <div className="mx-auto max-w-[1400px] px-4 py-10 md:px-8">
+      <GlassCard className="p-12 text-center">
+        <Lock size={38} className="mx-auto text-[#D4AF37]" />
+        <h2 className="mt-4 font-serif text-2xl font-semibold text-white">{label}</h2>
+        <p className="mt-2 text-sm text-white/55">
+          ليس لديك صلاحية للوصول إلى هذا القسم — تواصل مع مدير النظام.
+        </p>
+      </GlassCard>
     </div>
   );
 }

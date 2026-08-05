@@ -173,6 +173,87 @@ export type Database = {
         }
         Relationships: []
       }
+      role_permissions: {
+        Row: {
+          can_edit: boolean
+          can_view: boolean
+          created_at: string
+          id: string
+          role: string
+          section: string
+          updated_at: string
+        }
+        Insert: {
+          can_edit?: boolean
+          can_view?: boolean
+          created_at?: string
+          id?: string
+          role: string
+          section: string
+          updated_at?: string
+        }
+        Update: {
+          can_edit?: boolean
+          can_view?: boolean
+          created_at?: string
+          id?: string
+          role?: string
+          section?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      sheets: {
+        Row: {
+          allowed_roles: string[]
+          category: string
+          created_at: string
+          created_by: string | null
+          description_ar: string | null
+          description_en: string | null
+          icon: string
+          id: string
+          is_active: boolean
+          sort_order: number
+          title_ar: string | null
+          title_en: string
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          allowed_roles?: string[]
+          category?: string
+          created_at?: string
+          created_by?: string | null
+          description_ar?: string | null
+          description_en?: string | null
+          icon?: string
+          id?: string
+          is_active?: boolean
+          sort_order?: number
+          title_ar?: string | null
+          title_en: string
+          updated_at?: string
+          url: string
+        }
+        Update: {
+          allowed_roles?: string[]
+          category?: string
+          created_at?: string
+          created_by?: string | null
+          description_ar?: string | null
+          description_en?: string | null
+          icon?: string
+          id?: string
+          is_active?: boolean
+          sort_order?: number
+          title_ar?: string | null
+          title_en?: string
+          updated_at?: string
+          url?: string
+        }
+        Relationships: []
+      }
       suppliers: {
         Row: {
           category: string | null
@@ -254,10 +335,14 @@ export type Database = {
         }
         Returns: boolean
       }
+      has_section_access: {
+        Args: { _section: string; _user_id: string }
+        Returns: boolean
+      }
       is_approved: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
-      app_role: "admin" | "member"
+      app_role: "admin" | "member" | "manager" | "viewer"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -385,7 +470,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "member"],
+      app_role: ["admin", "member", "manager", "viewer"],
     },
   },
 } as const

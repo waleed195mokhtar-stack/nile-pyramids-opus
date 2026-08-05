@@ -4,6 +4,7 @@ import { sidebarItems } from "@/config/navigation";
 import { company } from "@/config/company";
 import { useI18n } from "@/hooks/useI18n";
 import { useProfile } from "@/hooks/useProfile";
+import { useAccess } from "@/hooks/useAccess";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -16,6 +17,10 @@ type Props = {
 export function Sidebar({ active, onSelect, mobileOpen, onClose }: Props) {
   const { lang, t } = useI18n();
   const { profile } = useProfile();
+  const { canView, loading: accessLoading } = useAccess();
+  const items = accessLoading
+    ? sidebarItems
+    : sidebarItems.filter((i) => i.key === "dashboard" || canView(i.key));
   const welcomeName =
     (profile?.full_name && profile.full_name.trim()) ||
     profile?.email ||
@@ -74,7 +79,7 @@ export function Sidebar({ active, onSelect, mobileOpen, onClose }: Props) {
         {/* Nav */}
         <nav className="flex-1 overflow-y-auto px-4 py-5">
           <ul className="space-y-1">
-            {sidebarItems.map((item, i) => {
+            {items.map((item, i) => {
               const isActive = active === item.key;
               const Icon = item.icon;
               return (

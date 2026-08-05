@@ -21,7 +21,12 @@ import {
   approveUser,
   rejectUser,
   deleteUser,
+  setUserRole,
 } from "@/lib/admin.functions";
+import { SheetsManager } from "@/components/np/SheetsManager";
+import { PermissionsMatrix } from "@/components/np/PermissionsMatrix";
+import { ROLE_OPTIONS, ROLE_LABELS } from "@/hooks/useAccess";
+
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({ meta: [{ title: "Admin — Nile Pyramids" }] }),
@@ -47,9 +52,12 @@ function AdminPage() {
   const doApprove = useServerFn(approveUser);
   const doReject = useServerFn(rejectUser);
   const doDelete = useServerFn(deleteUser);
+  const doSetRole = useServerFn(setUserRole);
 
+  const [tab, setTab] = useState<"users" | "sheets" | "permissions">("users");
   const [filter, setFilter] = useState<"all" | "pending" | "approved" | "rejected">("all");
   const [query, setQuery] = useState("");
+
 
   const { data: users = [], isLoading } = useQuery({
     queryKey: ["admin-users"],
@@ -84,6 +92,18 @@ function AdminPage() {
     },
     onError: (e: Error) => toast.error(e.message),
   });
+
+  const roleMut = useMutation({
+    mutationFn: (v: { userId: string; role: string }) => doSetRole({ data: v }),
+    onSuccess: () => {
+      toast.success("تم تحديث الدور");
+      invalidate();
+      window.dispatchEvent(new Event("permissions:refresh"));
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+
 
   const filtered = users.filter((u) => {
     if (filter !== "all" && u.status !== filter) return false;
@@ -128,14 +148,38 @@ function AdminPage() {
                   className="text-2xl tracking-wide text-white"
                   style={{ fontFamily: "Cormorant Garamond, serif", fontWeight: 600 }}
                 >
-                  Admin — إدارة المستخدمين
+                  Admin — لوحة التحكم
                 </h1>
-                <p className="text-xs text-white/50">قبول، رفض، أو حذف حسابات الورك سبيس</p>
+                <p className="text-xs text-white/50">المستخدمون، الشيتات، والصلاحيات</p>
               </div>
             </div>
           </div>
         </div>
 
+        {/* Tabs */}
+        <div className="mb-6 flex flex-wrap items-center gap-1.5 rounded-xl border border-white/10 bg-white/5 p-1">
+          {([
+            ["users", "المستخدمون"],
+            ["sheets", "الشيتات"],
+            ["permissions", "الصلاحيات"],
+          ] as const).map(([k, label]) => (
+            <button
+              key={k}
+              onClick={() => setTab(k)}
+              className={`rounded-lg px-4 py-2 text-sm font-medium transition ${
+                tab === k ? "bg-[#D4AF37] text-[#081C3A]" : "text-white/60 hover:text-white"
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+
+        {tab === "sheets" && <SheetsManager />}
+        {tab === "permissions" && <PermissionsMatrix />}
+
+        {tab === "users" && (
+        <>
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
           <StatPill label="الإجمالي" value={counts.all} tone="neutral" />
@@ -143,6 +187,7 @@ function AdminPage() {
           <StatPill label="مفعّل" value={counts.approved} tone="green" icon={<UserCheck size={14} />} />
           <StatPill label="مرفوض" value={counts.rejected} tone="red" icon={<UserX size={14} />} />
         </div>
+
 
         {/* Toolbar */}
         <div className="mb-4 flex flex-col md:flex-row md:items-center gap-3">
@@ -220,14 +265,29 @@ function AdminPage() {
                       </td>
                       <td className="px-4 py-3"><StatusBadge status={u.status} /></td>
                       <td className="px-4 py-3">
-                        {u.roles.includes("admin") ? (
-                          <span className="inline-flex items-center gap-1 rounded-md bg-[#D4AF37]/15 px-2 py-0.5 text-xs text-[#D4AF37] font-medium">
-                            <ShieldCheck size={12} /> Admin
-                          </span>
-                        ) : (
-                          <span className="text-xs text-white/50">Member</span>
-                        )}
+                        <div className="flex items-center gap-1.5">
+                          {u.roles.includes("admin") && (
+                            <ShieldCheck size={12} className="text-[#D4AF37]" />
+                          )}
+                          <select
+                            value={
+                              ROLE_OPTIONS.find((r) => u.roles.includes(r)) ?? "member"
+                            }
+                            onChange={(e) =>
+                              roleMut.mutate({ userId: u.id, role: e.target.value })
+                            }
+                            disabled={roleMut.isPending}
+                            className="rounded-md border border-white/10 bg-white/5 px-2 py-1 text-xs text-white outline-none focus:border-[#D4AF37]/50"
+                          >
+                            {ROLE_OPTIONS.map((r) => (
+                              <option key={r} value={r} className="bg-[#0A2547]">
+                                {ROLE_LABELS[r].ar}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
                       </td>
+
                       <td className="px-4 py-3 text-xs text-white/50">
                         {new Date(u.created_at).toLocaleDateString()}
                       </td>
@@ -274,6 +334,9 @@ function AdminPage() {
             </div>
           )}
         </div>
+        </>
+        )}
+
       </div>
     </div>
   );
