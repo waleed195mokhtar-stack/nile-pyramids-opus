@@ -52,9 +52,12 @@ function AdminPage() {
   const doApprove = useServerFn(approveUser);
   const doReject = useServerFn(rejectUser);
   const doDelete = useServerFn(deleteUser);
+  const doSetRole = useServerFn(setUserRole);
 
+  const [tab, setTab] = useState<"users" | "sheets" | "permissions">("users");
   const [filter, setFilter] = useState<"all" | "pending" | "approved" | "rejected">("all");
   const [query, setQuery] = useState("");
+
 
   const { data: users = [], isLoading } = useQuery({
     queryKey: ["admin-users"],
