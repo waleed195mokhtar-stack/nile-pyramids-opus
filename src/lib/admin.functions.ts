@@ -80,3 +80,30 @@ export const deleteUser = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
+export const setUserRole = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { userId: string; role: string }) =>
+    z
+      .object({
+        userId: z.string().uuid(),
+        role: z.enum(["admin", "manager", "member", "viewer"]),
+      })
+      .parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.supabase, context.userId);
+    if (data.userId === context.userId && data.role !== "admin") {
+      throw new Error("You cannot remove your own admin role");
+    }
+    const { error: delErr } = await context.supabase
+      .from("user_roles")
+      .delete()
+      .eq("user_id", data.userId);
+    if (delErr) throw new Error(delErr.message);
+    const { error } = await context.supabase
+      .from("user_roles")
+      .insert({ user_id: data.userId, role: data.role as never });
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
