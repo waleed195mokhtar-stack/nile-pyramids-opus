@@ -253,14 +253,29 @@ function AdminPage() {
                       </td>
                       <td className="px-4 py-3"><StatusBadge status={u.status} /></td>
                       <td className="px-4 py-3">
-                        {u.roles.includes("admin") ? (
-                          <span className="inline-flex items-center gap-1 rounded-md bg-[#D4AF37]/15 px-2 py-0.5 text-xs text-[#D4AF37] font-medium">
-                            <ShieldCheck size={12} /> Admin
-                          </span>
-                        ) : (
-                          <span className="text-xs text-white/50">Member</span>
-                        )}
+                        <div className="flex items-center gap-1.5">
+                          {u.roles.includes("admin") && (
+                            <ShieldCheck size={12} className="text-[#D4AF37]" />
+                          )}
+                          <select
+                            value={
+                              ROLE_OPTIONS.find((r) => u.roles.includes(r)) ?? "member"
+                            }
+                            onChange={(e) =>
+                              roleMut.mutate({ userId: u.id, role: e.target.value })
+                            }
+                            disabled={roleMut.isPending}
+                            className="rounded-md border border-white/10 bg-white/5 px-2 py-1 text-xs text-white outline-none focus:border-[#D4AF37]/50"
+                          >
+                            {ROLE_OPTIONS.map((r) => (
+                              <option key={r} value={r} className="bg-[#0A2547]">
+                                {ROLE_LABELS[r].ar}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
                       </td>
+
                       <td className="px-4 py-3 text-xs text-white/50">
                         {new Date(u.created_at).toLocaleDateString()}
                       </td>
