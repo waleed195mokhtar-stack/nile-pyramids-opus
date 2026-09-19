@@ -68,6 +68,63 @@ export type Database = {
         }
         Relationships: []
       }
+      employees: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          department: string | null
+          department_ar: string | null
+          email: string | null
+          hire_date: string | null
+          id: string
+          name: string
+          name_ar: string | null
+          notes: string | null
+          phone: string | null
+          role_title: string | null
+          role_title_ar: string | null
+          salary: number
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          department?: string | null
+          department_ar?: string | null
+          email?: string | null
+          hire_date?: string | null
+          id?: string
+          name: string
+          name_ar?: string | null
+          notes?: string | null
+          phone?: string | null
+          role_title?: string | null
+          role_title_ar?: string | null
+          salary?: number
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          department?: string | null
+          department_ar?: string | null
+          email?: string | null
+          hire_date?: string | null
+          id?: string
+          name?: string
+          name_ar?: string | null
+          notes?: string | null
+          phone?: string | null
+          role_title?: string | null
+          role_title_ar?: string | null
+          salary?: number
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       operations: {
         Row: {
           created_at: string

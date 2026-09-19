@@ -8,6 +8,13 @@
       "when": 1789807292392,
       "tag": "0000_sheets_editor_permissions",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1789807957471,
+      "tag": "0001_create_employees",
+      "breakpoints": true
     }
   ]
 }
