@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { useMemo, useState } from "react";
-import { Search, Plus, Download, Filter, Star, Phone, Mail, TrendingUp, DollarSign, Users as UsersIcon, ClipboardList, Calendar, FileSpreadsheet, FileText } from "lucide-react";
+import { Search, Plus, Download, Filter, Star, Phone, Mail, TrendingUp, DollarSign, Users as UsersIcon, ClipboardList, Calendar, FileSpreadsheet, FileText, Settings2, Eye } from "lucide-react";
 import { GlassCard } from "./GlassCard";
 import { useI18n } from "@/hooks/useI18n";
 import { useSheets } from "@/hooks/useSheets";
