@@ -1,7 +1,10 @@
 import { motion } from "framer-motion";
-import { Search, Plus, Download, Filter, Star, Phone, Mail, TrendingUp, DollarSign, Users as UsersIcon, ClipboardList, Calendar, FileSpreadsheet, FileText, Image as ImageIcon, File as FileIcon } from "lucide-react";
+import { useMemo, useState } from "react";
+import { Search, Plus, Download, Filter, Star, Phone, Mail, TrendingUp, DollarSign, Users as UsersIcon, ClipboardList, Calendar, FileSpreadsheet, FileText } from "lucide-react";
 import { GlassCard } from "./GlassCard";
 import { useI18n } from "@/hooks/useI18n";
+import { useSheets } from "@/hooks/useSheets";
+import { SheetCard } from "./SheetCard";
 import {
   customers,
   suppliers,
@@ -10,7 +13,6 @@ import {
   invoices,
   deals,
   employeesFull,
-  files,
 } from "@/data/businessData";
 import { CrudSection } from "./CrudSection";
 
@@ -398,35 +400,73 @@ export function ReportsSection() {
 export function FilesSection() {
   const { lang } = useI18n();
   const ar = lang === "ar";
-  const iconFor = (t: string) => {
-    if (t === "xlsx") return FileSpreadsheet;
-    if (t === "pdf") return FileText;
-    if (t === "img") return ImageIcon;
-    return FileIcon;
-  };
+  const { sheets, loading } = useSheets();
+  const [q, setQ] = useState("");
+  const [cat, setCat] = useState("all");
+
+  const categories = useMemo(
+    () => ["all", ...Array.from(new Set(sheets.map((s) => s.category)))],
+    [sheets],
+  );
+
+  const filtered = useMemo(() => {
+    const needle = q.trim().toLowerCase();
+    return sheets.filter((s) => {
+      if (cat !== "all" && s.category !== cat) return false;
+      if (!needle) return true;
+      return [s.title_en, s.title_ar, s.description_en, s.description_ar, s.category]
+        .filter(Boolean)
+        .some((v) => String(v).toLowerCase().includes(needle));
+    });
+  }, [sheets, q, cat]);
+
   return (
-    <PageShell title={ar ? "الملفات المشتركة" : "Shared Files"} subtitle={ar ? "مستندات الفريق ومرفقات العمل" : "Team documents and work attachments"}>
-      <Toolbar placeholder={ar ? "ابحث في الملفات…" : "Search files…"} />
-      <Table head={ar ? ["الاسم", "المالك", "الحجم", "آخر تحديث"] : ["Name", "Owner", "Size", "Updated"]}>
-        {files.map((f, i) => {
-          const Icon = iconFor(f.type);
-          return (
-            <motion.tr key={f.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.03 }} className="hover:bg-white/[0.03] cursor-pointer">
-              <td className="px-4 py-3">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#D4AF37]/10 text-[#D4AF37]">
-                    <Icon size={16} />
-                  </div>
-                  <span className="font-medium text-white">{ar ? f.nameAr : f.nameEn}</span>
-                </div>
-              </td>
-              <td className="px-4 py-3 text-white/70">{f.owner}</td>
-              <td className="px-4 py-3 text-white/60">{f.size}</td>
-              <td className="px-4 py-3 text-white/60">{f.updated}</td>
-            </motion.tr>
-          );
-        })}
-      </Table>
+    <PageShell
+      title={ar ? "الملفات المشتركة" : "Shared Files"}
+      subtitle={ar ? "لينكات الشيتات والمستندات المشتركة — اضغط للفتح" : "Shared spreadsheets and documents — click to open"}
+    >
+      <div className="mb-4 flex flex-wrap items-center gap-2">
+        <div className="flex flex-1 min-w-[220px] items-center gap-2 rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 backdrop-blur-xl">
+          <Search size={15} className="text-white/40" />
+          <input
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder={ar ? "ابحث في الملفات…" : "Search files…"}
+            className="w-full bg-transparent text-sm text-white placeholder:text-white/30 outline-none"
+          />
+        </div>
+        <div className="flex flex-wrap items-center gap-1.5">
+          {categories.map((c) => (
+            <button
+              key={c}
+              onClick={() => setCat(c)}
+              className={`rounded-lg border px-3 py-1.5 text-xs transition-colors ${
+                cat === c
+                  ? "border-[#D4AF37]/50 bg-[#D4AF37]/15 text-[#E8C866]"
+                  : "border-white/10 bg-white/[0.03] text-white/60 hover:bg-white/[0.06]"
+              }`}
+            >
+              {c === "all" ? (ar ? "الكل" : "All") : c}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {loading ? (
+        <GlassCard className="p-10 text-center text-sm text-white/50">
+          {ar ? "جارٍ التحميل…" : "Loading…"}
+        </GlassCard>
+      ) : filtered.length === 0 ? (
+        <GlassCard className="p-10 text-center text-sm text-white/50">
+          {ar ? "لا توجد ملفات — يضيفها مدير النظام من لوحة الإدارة." : "No files yet — an admin can add them from the admin panel."}
+        </GlassCard>
+      ) : (
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          {filtered.map((s, i) => (
+            <SheetCard key={s.id} sheet={s} index={i} />
+          ))}
+        </div>
+      )}
     </PageShell>
   );
 }
