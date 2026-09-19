@@ -401,6 +401,9 @@ export function FilesSection() {
   const { lang } = useI18n();
   const ar = lang === "ar";
   const { sheets, loading } = useSheets();
+  const { canEdit } = useAccess();
+  const mayEdit = canEdit("files");
+  const [manage, setManage] = useState(false);
   const [q, setQ] = useState("");
   const [cat, setCat] = useState("all");
 
