@@ -4,7 +4,9 @@ import { Search, Plus, Download, Filter, Star, Phone, Mail, TrendingUp, DollarSi
 import { GlassCard } from "./GlassCard";
 import { useI18n } from "@/hooks/useI18n";
 import { useSheets } from "@/hooks/useSheets";
+import { useAccess } from "@/hooks/useAccess";
 import { SheetCard } from "./SheetCard";
+import { SheetsManager } from "./SheetsManager";
 import {
   customers,
   suppliers,
