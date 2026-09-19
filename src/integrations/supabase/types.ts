@@ -339,6 +339,10 @@ export type Database = {
         Args: { _section: string; _user_id: string }
         Returns: boolean
       }
+      has_section_edit: {
+        Args: { _section: string; _user_id: string }
+        Returns: boolean
+      }
       is_approved: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
