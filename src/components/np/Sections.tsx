@@ -485,6 +485,8 @@ export function FilesSection() {
           ))}
         </div>
       )}
+      </>
+      )}
     </PageShell>
   );
 }
