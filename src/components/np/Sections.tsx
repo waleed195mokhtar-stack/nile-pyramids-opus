@@ -1,10 +1,12 @@
 import { motion } from "framer-motion";
 import { useMemo, useState } from "react";
-import { Search, Plus, Download, Filter, Star, Phone, Mail, TrendingUp, DollarSign, Users as UsersIcon, ClipboardList, Calendar, FileSpreadsheet, FileText } from "lucide-react";
+import { Search, Plus, Download, Filter, Star, Phone, Mail, TrendingUp, DollarSign, Users as UsersIcon, ClipboardList, Calendar, FileSpreadsheet, FileText, Settings2, Eye } from "lucide-react";
 import { GlassCard } from "./GlassCard";
 import { useI18n } from "@/hooks/useI18n";
 import { useSheets } from "@/hooks/useSheets";
+import { useAccess } from "@/hooks/useAccess";
 import { SheetCard } from "./SheetCard";
+import { SheetsManager } from "./SheetsManager";
 import {
   customers,
   suppliers,
@@ -401,6 +403,9 @@ export function FilesSection() {
   const { lang } = useI18n();
   const ar = lang === "ar";
   const { sheets, loading } = useSheets();
+  const { canEdit } = useAccess();
+  const mayEdit = canEdit("files");
+  const [manage, setManage] = useState(false);
   const [q, setQ] = useState("");
   const [cat, setCat] = useState("all");
 
@@ -424,7 +429,22 @@ export function FilesSection() {
     <PageShell
       title={ar ? "الملفات المشتركة" : "Shared Files"}
       subtitle={ar ? "لينكات الشيتات والمستندات المشتركة — اضغط للفتح" : "Shared spreadsheets and documents — click to open"}
+      actions={
+        mayEdit ? (
+          <button
+            onClick={() => setManage((v) => !v)}
+            className="flex items-center gap-1.5 rounded-xl bg-[#D4AF37] px-3.5 py-2 text-xs font-semibold text-[#081C3A] hover:bg-[#E8C866]"
+          >
+            {manage ? <Eye size={13} /> : <Settings2 size={13} />}
+            {manage ? (ar ? "عرض الملفات" : "View files") : ar ? "إدارة الملفات" : "Manage files"}
+          </button>
+        ) : undefined
+      }
     >
+      {mayEdit && manage ? (
+        <SheetsManager />
+      ) : (
+      <>
       <div className="mb-4 flex flex-wrap items-center gap-2">
         <div className="flex flex-1 min-w-[220px] items-center gap-2 rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 backdrop-blur-xl">
           <Search size={15} className="text-white/40" />
@@ -466,6 +486,8 @@ export function FilesSection() {
             <SheetCard key={s.id} sheet={s} index={i} />
           ))}
         </div>
+      )}
+      </>
       )}
     </PageShell>
   );
