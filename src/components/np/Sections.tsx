@@ -1,7 +1,10 @@
 import { motion } from "framer-motion";
-import { Search, Plus, Download, Filter, Star, Phone, Mail, TrendingUp, DollarSign, Users as UsersIcon, ClipboardList, Calendar, FileSpreadsheet, FileText, Image as ImageIcon, File as FileIcon } from "lucide-react";
+import { useMemo, useState } from "react";
+import { Search, Plus, Download, Filter, Star, Phone, Mail, TrendingUp, DollarSign, Users as UsersIcon, ClipboardList, Calendar } from "lucide-react";
 import { GlassCard } from "./GlassCard";
 import { useI18n } from "@/hooks/useI18n";
+import { useSheets } from "@/hooks/useSheets";
+import { SheetCard } from "./SheetCard";
 import {
   customers,
   suppliers,
@@ -10,7 +13,6 @@ import {
   invoices,
   deals,
   employeesFull,
-  files,
 } from "@/data/businessData";
 import { CrudSection } from "./CrudSection";
 
