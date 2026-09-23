@@ -15,6 +15,13 @@
       "when": 1789807957471,
       "tag": "0001_create_employees",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1790163053312,
+      "tag": "0002_link_users_to_employees",
+      "breakpoints": true
     }
   ]
 }
