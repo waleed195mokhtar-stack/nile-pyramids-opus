@@ -262,7 +262,8 @@ function EditorDialog({ ar, fields, refs, initial, onClose, onSave, titleEn, tit
 }) {
   const [values, setValues] = useState<Record<string, unknown>>(() => {
     const v: Record<string, unknown> = {};
-    for (const f of fields) v[f.key] = initial[f.key] ?? "";
+    const isNew = !initial.id;
+    for (const f of fields) v[f.key] = initial[f.key] ?? (isNew ? f.defaultValue ?? "" : "");
     return v;
   });
   const [saving, setSaving] = useState(false);
