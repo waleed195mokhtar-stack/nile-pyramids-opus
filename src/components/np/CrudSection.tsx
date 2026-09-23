@@ -96,7 +96,10 @@ export function CrudSection({
     const payload: Record<string, unknown> = {};
     for (const f of fields) {
       const v = values[f.key];
-      if (v === "" || v === undefined) payload[f.key] = null;
+      if (v === "" || v === undefined || v === null) {
+        // leave numeric columns to their database default instead of null
+        if (f.type !== "number") payload[f.key] = null;
+      }
       else if (f.type === "number") payload[f.key] = v === null ? null : Number(v);
       else payload[f.key] = v;
     }
