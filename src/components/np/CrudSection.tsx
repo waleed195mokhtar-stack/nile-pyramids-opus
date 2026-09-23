@@ -18,6 +18,8 @@ export type FieldDef = {
   refLabelKey?: string;
   refLabelKeyAr?: string;
   required?: boolean;
+  /** Pre-selected value when creating a new record */
+  defaultValue?: string | number;
   hideInTable?: boolean;
   render?: (value: unknown, row: Record<string, unknown>) => React.ReactNode;
   width?: string;
