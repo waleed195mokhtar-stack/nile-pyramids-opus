@@ -348,7 +348,7 @@ export function HRSection() {
         { key: "hire_date", label: "Hire Date", labelAr: "تاريخ التعيين", type: "date" },
         { key: "salary", label: "Salary", labelAr: "الراتب", type: "number",
           render: (v: unknown) => <span className="font-semibold text-[#E8C866]">{fmt(Number(v) || 0)}</span> },
-        { key: "status", label: "Status", labelAr: "الحالة", type: "select", options: ["online", "leave", "offline"], required: true,
+        { key: "status", label: "Status", labelAr: "الحالة", type: "select", options: ["online", "leave", "offline"], required: true, defaultValue: "online",
           render: (v: unknown) => <Badge color={v === "online" ? "green" : v === "leave" ? "gold" : "gray"}>{String(v)}</Badge> },
         { key: "notes", label: "Notes", labelAr: "ملاحظات", type: "textarea",
           render: (v: unknown) => v ? <span className="line-clamp-2 max-w-[240px] text-white/60">{String(v)}</span> : <span className="text-white/30">—</span> },
