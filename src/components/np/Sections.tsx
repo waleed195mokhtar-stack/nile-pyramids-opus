@@ -321,42 +321,39 @@ export function SalesSection() {
   );
 }
 
-/* ---------- HR ---------- */
+/* ---------- HR (Supabase-backed) ---------- */
 export function HRSection() {
   const { lang } = useI18n();
   const ar = lang === "ar";
   return (
-    <PageShell title={ar ? "الموارد البشرية" : "Human Resources"} subtitle={ar ? "الموظفون والمناوبات والحضور" : "Staff, shifts and attendance"}>
-      <KpiRow items={[
-        { label: ar ? "إجمالي الموظفين" : "Headcount", value: "68", icon: UsersIcon },
-        { label: ar ? "متصل الآن" : "Online Now", value: "42", icon: TrendingUp, delta: "+3" },
-        { label: ar ? "في إجازة" : "On Leave", value: "6", icon: Calendar },
-        { label: ar ? "توظيف مفتوح" : "Open Roles", value: "4", icon: ClipboardList },
-      ]} />
-      <Toolbar placeholder={ar ? "ابحث عن موظف…" : "Search employees…"} />
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {employeesFull.map((e, i) => (
-          <motion.div key={e.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}>
-            <GlassCard className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="relative flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br from-[#D4AF37] to-[#E8C866] font-serif font-bold text-[#081C3A]">
-                  {e.name.charAt(0)}
-                  <span className={`absolute bottom-0 end-0 h-2.5 w-2.5 rounded-full border-2 border-[#081C3A] ${e.status === "online" ? "bg-emerald-400" : e.status === "leave" ? "bg-amber-400" : "bg-white/30"}`} />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="truncate font-medium text-white">{ar ? e.nameAr : e.name}</div>
-                  <div className="truncate text-[11px] text-white/50">{ar ? e.roleAr : e.role}</div>
-                </div>
-              </div>
-              <div className="mt-3 flex items-center justify-between border-t border-white/5 pt-3">
-                <div className="text-[10px] uppercase tracking-widest text-white/40">{ar ? e.departmentAr : e.department}</div>
-                <Badge color={e.status === "online" ? "green" : e.status === "leave" ? "gold" : "gray"}>{e.status}</Badge>
-              </div>
-            </GlassCard>
-          </motion.div>
-        ))}
-      </div>
-    </PageShell>
+    <CrudSection
+      table="employees"
+      ar={ar}
+      titleEn="Human Resources"
+      titleAr="الموارد البشرية"
+      subtitleEn="Employee directory, roles, departments and payroll"
+      subtitleAr="دليل الموظفين والوظائف والأقسام والرواتب"
+      searchKeys={["name", "name_ar", "role_title", "role_title_ar", "department", "email", "phone"]}
+      filterKeys={["department", "status"]}
+      fields={[
+        { key: "name", label: "Name", labelAr: "الاسم", required: true },
+        { key: "name_ar", label: "Name (Arabic)", labelAr: "الاسم بالعربي" },
+        { key: "role_title", label: "Job Title", labelAr: "الوظيفة" },
+        { key: "role_title_ar", label: "Job Title (Arabic)", labelAr: "الوظيفة بالعربي", hideInTable: true },
+        { key: "department", label: "Department", labelAr: "القسم", type: "select",
+          options: ["Operations", "Sales", "Guides", "Finance", "Bookings", "HR", "Marketing"] },
+        { key: "department_ar", label: "Department (Arabic)", labelAr: "القسم بالعربي", hideInTable: true },
+        { key: "email", label: "Email", labelAr: "البريد", type: "email" },
+        { key: "phone", label: "Phone", labelAr: "الهاتف" },
+        { key: "hire_date", label: "Hire Date", labelAr: "تاريخ التعيين", type: "date" },
+        { key: "salary", label: "Salary", labelAr: "الراتب", type: "number",
+          render: (v: unknown) => <span className="font-semibold text-[#E8C866]">{fmt(Number(v) || 0)}</span> },
+        { key: "status", label: "Status", labelAr: "الحالة", type: "select", options: ["online", "leave", "offline"], required: true,
+          render: (v: unknown) => <Badge color={v === "online" ? "green" : v === "leave" ? "gold" : "gray"}>{String(v)}</Badge> },
+        { key: "notes", label: "Notes", labelAr: "ملاحظات", type: "textarea",
+          render: (v: unknown) => v ? <span className="line-clamp-2 max-w-[240px] text-white/60">{String(v)}</span> : <span className="text-white/30">—</span> },
+      ]}
+    />
   );
 }
 
