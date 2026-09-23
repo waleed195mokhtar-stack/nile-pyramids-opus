@@ -18,6 +18,8 @@ export type FieldDef = {
   refLabelKey?: string;
   refLabelKeyAr?: string;
   required?: boolean;
+  /** Pre-selected value when creating a new record */
+  defaultValue?: string | number;
   hideInTable?: boolean;
   render?: (value: unknown, row: Record<string, unknown>) => React.ReactNode;
   width?: string;
@@ -94,7 +96,10 @@ export function CrudSection({
     const payload: Record<string, unknown> = {};
     for (const f of fields) {
       const v = values[f.key];
-      if (v === "" || v === undefined) payload[f.key] = null;
+      if (v === "" || v === undefined || v === null) {
+        // leave numeric columns to their database default instead of null
+        if (f.type !== "number") payload[f.key] = null;
+      }
       else if (f.type === "number") payload[f.key] = v === null ? null : Number(v);
       else payload[f.key] = v;
     }
@@ -260,7 +265,8 @@ function EditorDialog({ ar, fields, refs, initial, onClose, onSave, titleEn, tit
 }) {
   const [values, setValues] = useState<Record<string, unknown>>(() => {
     const v: Record<string, unknown> = {};
-    for (const f of fields) v[f.key] = initial[f.key] ?? "";
+    const isNew = !initial.id;
+    for (const f of fields) v[f.key] = initial[f.key] ?? (isNew ? f.defaultValue ?? "" : "");
     return v;
   });
   const [saving, setSaving] = useState(false);
